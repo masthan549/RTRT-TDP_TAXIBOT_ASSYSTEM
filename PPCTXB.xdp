@@ -1,0 +1,2735 @@
+<!DOCTYPE TDP SYSTEM "tdp.dtd">
+<TDP Doc="WELCOME" type="CCPP" Name="PPCTXB" Version="McKinleyRSR3" read_only="no" >
+<COMMENT>For v2003.06.13 Release
+$Revision: 1.44 $
+
+ 
+Support:
+-------------
+Language		:	C - C++
+Features		:	Component Testing - Code Coverage - Performance Profiling - Memory Profiling - Trace
+
+Tested Against:
+------------------------
+Host Machine		:	Windows 2000
+Compiler		:	diab
+Linker			:	diab
+Debugger		:	Windriver
+OS			:	VxWorks cert
+Target			:	PowerPC 603
+Revision History               :
+	Date		Change		Changed By
+	29-01-2014         For Build 442      Sowmya
+
+This target deployment port is adapted for VxWorks cert running on a Power PC board.
+
+Adapt the following setting, representing the target IP address or name:
+
+        - Basic Settings
+                - For C and For C++:
+                TARGETNAME                              &lt;targetIP>
+                DEFAULT_DEFINES                 CPU=&lt;Your VxWorks Architecture>,.....
+                COMPILER,LINKER,DEBUGGER,NM     cc&lt;arch>,ld&lt;arch>,wrwb&lt;arch>,nm&lt;arch>
+
+This TDP uses the WTX API from WindRiver to collect test results. The name of the program is rtrtWtx2.exe.
+Usage:  &quot;rtrtwtx2 [options]&quot; where options can be one or more of the following:
+        -entry &lt;entry point> : Name of the function to start the application
+        -list &lt;comma separated list of objects to load/unload> or .lst file
+        -load : Load then execute the objects listed in -list option
+        -unload : After execution, unload the objects listed in -list option
+        -out &lt;default out file name> : Name of the default out.spt file written
+        -notraces : Do not get result file from target
+        -t &lt;Target Name> : Name of the VxWorks target to attach to
+        -a : Files opened in append mode
+        -v : Debug/verbose mode
+        -b : Stops when the program exits
+        -delay &lt;delay> : Try every second for &lt;delay> seconds to attach to the target
+
+The source code for rtrtWtx2 can be found in this TDP so you can recompile it if needed.
+Note that if you execute the code wdbUserEvtPost(&quot;RTRTENDS&quot;); on the target, it will automatically close all the the result files opened on the host machine.
+
+
+
+
+</COMMENT>
+<IS Doc="IS" Label="Basic Settings" >
+<COMMENT/>
+<IS_C Doc="IS" Label="For C" >
+<SETTINGS>
+<COMMENT/>
+<SRCEXT Doc="ISSRCEXT" Label="Source File Extension" >
+<COMMENT/>
+<VALUE>c</VALUE>
+</SRCEXT>
+<OBJEXT Doc="ISOBJEXT" Label="Object File Extension" >
+<COMMENT/>
+<VALUE>o</VALUE>
+</OBJEXT>
+<EXEEXT Doc="ISEXEEXT" Label="Executable File Extension" >
+<COMMENT/>
+<VALUE/>
+</EXEEXT>
+<ASMEXT Doc="ISASMEXT" Label="asm File Extension" >
+<COMMENT/>
+<VALUE>s</VALUE>
+</ASMEXT>
+<DLLEXT Doc="ISDLLEXT" Label="dll File Extension" >
+<COMMENT/>
+<VALUE>dll</VALUE>
+</DLLEXT>
+<LIBEXT Doc="ISLIBEXT" Label="Library File Extension" >
+<COMMENT/>
+<VALUE>lib</VALUE>
+</LIBEXT>
+<DEFAULT_INCLUDE_PATHS Doc="ISDEFAULT_INCLUDE_PATHS" Label="Default Include Paths" >
+<COMMENT/>
+<VALUE>C:/TXB_Build/ACS/acsProxy/acsPduProxy,C:/WindRiver/vxworks-cert-6.6.4.1/target/h/arch/ppc,C:/TXB_Build/ACS/acsM2S/acsIntcM2S,C:/TXB_Build/TXB_NB_APP/appSteeringwheelBreak,C:/TXB_Build/TXB_NB_APP/appYawRateFilter,C:/TXB_Build/BSW/bswCommon,C:/TXB_Build/BSP/HlcBSP_Cert/mnt,C:/TXB_Build/BSP/HlcBSP_Cert,C:/WindRiver/vxworks-cert-6.6.4.1/target/h,C:/WindRiver/vxworks-cert-6.6.4.1/target/config/comps/src,C:/WindRiver/vxworks-cert-6.6.4.1/target/h/wrn/coreip,C:/WindRiver/vxworks-cert-6.6.4.1/target/src/drv,C:/WindRiver/components/ip_net2-6.6/osconfig/vxworks/src,C:/WindRiver/components/ip_net2-6.6/osconfig/vxworks/h,C:/TXB_Build/BSP/HlcBSP_Cert/h,C:/WindRiver/vxworks-cert-6.6.4.1/target/src/hwif,C:/TXB_Build/CCP,C:/TXB_Build/BSW/bswManager,C:/TXB_Build/BSW/bswCommon/bswUtils,C:/TXB_Build/BSW/bswCommon/bswDispatcher,C:/TXB_Build/BSW/bswCommon/bswScheduler,C:/TXB_Build/BSW/bswInitShutdown,C:/TXB_Build/BSW/bswCommunicator/bswSerial,C:/TXB_Build/BSW/bswCommunicator/bswDiscrete,C:/TXB_Build/BSW/bswCommunicator/bswAnalog,C:/TXB_Build/BSW/bswCommunicator/bswCanBus,C:/TXB_Build/BSW/bswCommunicator/bswArinc429,C:/TXB_Build/ACS/acsManager/acsArincMngr,C:/TXB_Build/ACS/acsManager/acsAnalogMngr,C:/TXB_Build/ACS/acsManager/acsSerialMngr,C:/TXB_Build/ACS/acsManager/acsCanBusMngr,C:/TXB_Build/ACS/acsManager/acsDiscreteMngr,C:/TXB_Build/ACS/acsCommon/acsDispatcher,C:/TXB_Build/ACS/acsCommon,C:/TXB_Build/ACS/acsProxy/acsAtcProxy/AtcIcdM,C:/TXB_Build/ACS/acsProxy/acsDpProxy/DpIcdM,C:/TXB_Build/ACS/acsProxy/acsAhrsProxy,C:/TXB_Build/ACS/acsProxy/acsAtcProxy,C:/TXB_Build/ACS/acsProxy/acsDgpsProxy,C:/TXB_Build/ACS/acsProxy/acsTasProxy/TasIcdM,C:/TXB_Build/ACS/acsProxy/acsDpvProxy/DpvIcdM,C:/TXB_Build/ACS/acsProxy/acsDcProxy/DcIcdM,C:/TXB_Build/ACS/acsProxy/acsAcProxy/AcIcdM,C:/TXB_Build/ACS/acsM2S/acsAlnM2S,C:/TXB_Build/ACS/acsM2S/acsDgpsM2S,C:/TXB_Build/ACS/acsM2S/acsDpM2S,C:/TXB_Build/ACS/acsM2S/acsAtcM2S,C:/TXB_Build/ACS/acsM2S/acsBswM2S,C:/TXB_Build/ACS/acsM2S/acsWmlM2S,C:/TXB_Build/ACS/acsM2S/acsIsM2S,C:/TXB_Build/ACS/acsM2S/acsCsM2S,C:/TXB_Build/ACS/acsM2S/acsMdM2S,C:/TXB_Build/ACS/acsM2S/acsTasM2S,C:/TXB_Build/ACS/acsM2S/acsYrsM2S,C:/TXB_Build/ACS/acsM2S/acsAhrsM2S,C:/TXB_Build/ACS/acsM2S/acsVlM2S,C:/TXB_Build/ACS/acsM2S/acsDcM2S,C:/TXB_Build/ACS/acsM2S/acsDfM2S,C:/TXB_Build/ACS/acsM2S/acsDpvM2S,C:/TXB_Build/ACS/acsM2S/acsAcM2S,C:/TXB_Build/ACS/acsM2S/acsLvcM2S,C:/TXB_Build/ACS/acsM2S/acsSwM2S,C:/TXB_Build/ACS/acsProxy/acsYrsProxy,C:/TXB_Build/ACS/acsProxy/acsDbProxy,C:/TXB_Build/ACS/acsProxy/acsLvcProxy,C:/TXB_Build/ACS/acsProxy/acsDfProxy/DfIcdM,C:/TXB_Build/ACS/acsProxy/acsWmlProxy,C:/TXB_Build/ACS/acsProxy/acsCanBusOutBuilder,C:/TXB_Build/ACS/acsProxy/acsDfProxy,C:/TXB_Build/ACS/acsProxy/acsIntcProxy/IntcIcdM,C:/TXB_Build/ACS/acsProxy/acsDcProxy,C:/TXB_Build/ACS/acsProxy/acsTasProxy,C:/TXB_Build/ACS/acsProxy/acsDpProxy,C:/TXB_Build/ACS/acsProxy/acsSwProxy/SwIcdM,C:/TXB_Build/ACS/acsProxy/acsCanBusOutBuilder/HlcIcdM,C:/TXB_BUILD/ACS/acsProxy/acsCanBusOutBuilder/HlcIcdT,C:/TXB_Build/ACS/acsProxy/acsCanBusOutBuilder/HlcIcdT,C:/TXB_Build/ACS/acsProxy/acsAlnProxy/AlnIcdM,C:/TXB_Build/ACS/acsProxy/acsMdProxy,C:/TXB_Build/ACS/acsProxy/acsLvcProxy/LvcIcdM,C:/TXB_Build/ACS/acsProxy/acsLogProxy/LogIcdM,C:/TXB_Build/ACS/acsProxy/acsAhrsProxy/AhrsIcdM,C:/TXB_Build/ACS/acsProxy/acsSlamProxy,C:/TXB_Build/ACS/acsProxy/acsMdProxy/MdIcdM,C:/TXB_Build/ACS/acsProxy/acsWmlProxy/WmlIcdM,C:/TXB_Build/ACS/acsProxy/acsVlProxy/VlIcdM,C:/TXB_Build/ACS/acsProxy/acsSilProxy,C:/TXB_Build/ACS/acsProxy/acsYrsProxy/YrsIcdM,C:/TXB_Build/ACS/acsProxy/acsAcProxy,C:/TXB_Build/ACS/acsProxy/acsCsProxy,C:/TXB_Build/ACS/acsProxy/acsAlnProxy,C:/TXB_Build/ACS/acsProxy/acsDgpsProxy/DgpsIcdM,C:/TXB_Build/ACS/acsProxy/acsIntcProxy,C:/TXB_Build/ACS/acsProxy/acsLogProxy,C:/TXB_Build/ACS/acsProxy/acsVlProxy,C:/TXB_Build/ACS/acsProxy/acsDpvProxy,C:/TXB_Build/ACS/acsProxy/acsSwProxy,C:/TXB_Build/TXB_NB_APP/appCommon/appSimulinkCommon,C:/TXB_Build/TXB_NB_APP/appEngineManager,C:/TXB_Build/TXB_NB_APP/appSafetyModule,C:/TXB_Build/TXB_NB_APP/appSteeringControl,C:/TXB_Build/TXB_NB_APP/appDemandManagement,C:/TXB_Build/TXB_NB_APP/appModeManager,C:/TXB_Build/TXB_NB_APP/appDamperControl,C:/TXB_Build/TXB_NB_APP/appLocalization,C:/TXB_Build/TXB_NB_APP/appForceControl,C:/TXB_Build/TXB_NB_APP/appMissionOperation,C:/TXB_Build/TXB_NB_APP/appCommon/appDispatcher,C:/TXB_Build/TXB_NB_APP/appHealthMonitor,C:/TXB_Build/ACS/acsProxy/acsSilProxy/SilIcdM,C:/TXB_BUILD/ACS/acsTr/acsLocTrF,C:/TXB_BUILD/ACS/acsTr/acsLocTrS,C:/TXB_BUILD/ACS/acsTr/acsMoTrF,C:/TXB_BUILD/ACS/acsTr/acsMoTrS, C:/TXB_BUILD/ACS/acsProxy/acsPduProxy/PduIcdM, C:\WindRiver\diab\5.6.0.0\include, C:/TXB_BUILD/ACS/acsM2S/acsPduM2S,C:/TXB_BUILD/ACS/acsDb2Sp;C:/TXB_BUILD/ACS/acsProxy/acsLtProxy;C:/TXB_BUILD/ACS/acsProxy/acsLtProxy/LtIcdM;C:/TXB_BUILD/ACS/acsM2S/acsLtM2S</VALUE>
+</DEFAULT_INCLUDE_PATHS>
+<DEFAULT_DEFINES Doc="ISDEFAULT_DEFINES" Label="Default Defines" >
+<COMMENT/>
+<VALUE>CPU_VARIANT=_83xx,_WRS_HARDWARE_FP,CPU=PPC603,TOOL_FAMILY=diab,TOOL=diab,PRJ_BUILD,_WRS_KERNEL,IP_PORT_VXWORKS=6641,INET,DEVELOPMENT=0,VXWORKS,DEVELOPMENT_VARIANT=0,CERT,_WRS_NO_SPECIAL_SECTIONS,_WRS_VX_CERT,USE_MNLOGGER=0</VALUE>
+</DEFAULT_DEFINES>
+<DEFAULT_CPPFLAGS Doc="ISDEFAULT_CPPFLAGS" Label="Default Preprocessing Flags" >
+<COMMENT/>
+<VALUE>-DCPU_VARIANT=_83xx -g -tPPC603FH:vxworks66 -D_WRS_HARDWARE_FP -W:c:,-Xclib-optim-off -Xansi -Xlocal-data-area-static-only -Xsize-opt -W:c:,-Xmismatch-warning=2 -ew1554,1551,1552,1086,1047,1547 -ei1516,1643,1604 -Xlint -DCPU=PPC603 -DTOOL_FAMILY=diab -DTOOL=diab -DPRJ_BUILD -D_WRS_KERNEL -DIP_PORT_VXWORKS=6641 -DINET -DDEVELOPMENT=0 -DVXWORKS -DCERT -DDEVELOPMENT_VARIANT=0 -D_WRS_NO_SPECIAL_SECTIONS -D_WRS_VX_CERT -DUSE_MNLOGGER=0 -Xmake-dependency=0x04 -Xpointers-volatile -Xsmall-const=8 -Xsmall-data=8</VALUE>
+</DEFAULT_CPPFLAGS>
+<DEFAULT_CFLAGS Doc="ISDEFAULT_CFLAGS" Label="Default Compilation Flags" >
+<COMMENT/>
+<VALUE>-DCPU_VARIANT=_83xx -g -tPPC603FH:vxworks66 -D_WRS_HARDWARE_FP -W:c:,-Xclib-optim-off -Xansi -Xlocal-data-area-static-only -Xsize-opt -W:c:,-Xmismatch-warning=2 -ew1554,1551,1552,1086,1047,1547 -ei1516,1643,1604 -Xlint -DCPU=PPC603 -DTOOL_FAMILY=diab -DTOOL=diab -DPRJ_BUILD -D_WRS_KERNEL -DIP_PORT_VXWORKS=6641 -DINET -DDEVELOPMENT=0 -DVXWORKS -DCERT -DDEVELOPMENT_VARIANT=0 -D_WRS_NO_SPECIAL_SECTIONS -D_WRS_VX_CERT -DUSE_MNLOGGER=0 -Xmake-dependency=0x04 -Xpointers-volatile -Xsmall-const=8 -Xsmall-data=8</VALUE>
+</DEFAULT_CFLAGS>
+<DEFAULT_LDFLAGS Doc="ISDEFAULT_LDFLAGS" Label="Defautl Link Flags" >
+<COMMENT/>
+<VALUE>-tPPC603FH:vxworks66 -X -N -Xgenerate-paddr</VALUE>
+</DEFAULT_LDFLAGS>
+<DEFAULT_LIBRARY_PATHS Doc="ISDEFAULT_LIBRARY_PATHS" Label="Default Library Paths" >
+<COMMENT/>
+<VALUE>C:/WindRiver/vxworks-cert-6.6.4.1/target/lib/ppc/PPC32/diab_standard,C:/WindRiver/vxworks-cert-6.6.4.1/target/lib/ppc/PPC603/diab_83xx,C:/WindRiver/vxworks-cert-6.6.4.1/target/lib/ppc/PPC603/common_83xx,C:/WindRiver/vxworks-cert-6.6.4.1/target/lib/ppc/PPC603/diab,C:/WindRiver/vxworks-cert-6.6.4.1/target/lib/ppc/PPC603/common,C:/WindRiver/vxworks-cert-6.6.4.1/target/lib/ppc/PPC32/diab_ppc603_83xx,C:/WindRiver/vxworks-cert-6.6.4.1/target/lib/ppc/PPC32/common_ppc603_83xx,C:/WindRiver/vxworks-cert-6.6.4.1/target/lib/ppc/PPC32/diab,C:/WindRiver/vxworks-cert-6.6.4.1/target/lib/ppc/PPC32/common,C:/WindRiver/workspace/obj/vxworks-cert-6.6.4.1/krnl/lib/ppc/PPC32/diab,C:/WindRiver/workspace/obj/vxworks-cert-6.6.4.1/krnl/lib/ppc/PPC32/common,C:/WindRiver/components/obj/vxworks-cert-6.6.4.1/krnl/lib/ppc/PPC32/diab,C:/WindRiver/components/obj/vxworks-cert-6.6.4.1/krnl/lib/ppc/PPC32/common,..\..\WindRiver\vxworks-cert-6.6.4.1\target\lib\ppc\PPC32\common_ppc603</VALUE>
+</DEFAULT_LIBRARY_PATHS>
+<DEFAULT_LIBS Doc="ISDEFAULT_LIBS" Label="Default Additional Library" >
+<COMMENT/>
+<VALUE/>
+</DEFAULT_LIBS>
+<DEFAULT_ASMFLAGS Doc="ISDEFAULT_ASMFLAGS" Label="Default Assembly Flags" >
+<COMMENT/>
+<VALUE>-DCPU_VARIANT=_83xx -g -tPPC603FH:vxworks66 -D_WRS_HARDWARE_FP -W:c:,-Xclib-optim-off -Xansi -Xlocal-data-area-static-only -Xsize-opt -Xpreprocess-assembly -Xcpp-no-space -c -DCPU=PPC603 -DTOOL_FAMILY=diab -DTOOL=diab -DPRJ_BUILD -D_WRS_KERNEL -DIP_PORT_VXWORKS=6641 -DINET</VALUE>
+</DEFAULT_ASMFLAGS>
+<INIFIELD Doc="ISOTHERS" >
+<COMMENT/>
+<KEY>ASM_DEFINES</KEY>
+<VALUE>CPU_VARIANT=_83xx,_WRS_HARDWARE_FP,CPU=PPC603,TOOL_FAMILY=diab,TOOL=diab,PRJ_BUILD,_WRS_KERNEL,IP_PORT_VXWORKS=6641,INET,DEVELOPMENT=0,VXWORKS,DEVELOPMENT_VARIANT=0</VALUE>
+</INIFIELD>
+<INIFIELD Doc="ISOTHERS" >
+<COMMENT/>
+<KEY>DEFAULT_NCFLAGS</KEY>
+<VALUE>-DCPU_VARIANT=_83xx -g -tPPC603FH:vxworks66 -D_WRS_HARDWARE_FP -W:c:,-Xclib-optim-off -Xansi -Xlocal-data-area-static-only -Xsize-opt -W:c:,-Xmismatch-warning=2 -ew1554,1551,1552,1086,1047,1547 -ei1516,1643,1604 -Xlint -DCPU=PPC603 -DTOOL_FAMILY=diab -DTOOL=diab -DPRJ_BUILD -D_WRS_KERNEL -DIP_PORT_VXWORKS=6641 -DINET -DDEVELOPMENT=0 -DVXWORKS -DDEVELOPMENT_VARIANT=0 -DUSE_MNLOGGER=1 -Xmake-dependency=0x04 -Xpointers-volatile -Xsmall-const=8 -Xsmall-data=8</VALUE>
+</INIFIELD>
+<DEFAULT_TPLIB_CCFLAGS Doc="ISDEFAULT_TPLIB_CCFLAGS" Label="Default Compilation Flags for the TP library" >
+<COMMENT/>
+<VALUE/>
+</DEFAULT_TPLIB_CCFLAGS>
+<DEFAULT_TPDLL_CCFLAGS Doc="ISDEFAULT_TPDLL_CCFLAGS" Label="Default Compilation Flags for the TP dll" >
+<COMMENT/>
+<VALUE/>
+</DEFAULT_TPDLL_CCFLAGS>
+<DEFAULT_TPLIB_LDFLAGS Doc="ISDEFAULT_TPLIB_LDFLAGS" Label="Default Link Flags for the TP library" >
+<COMMENT/>
+<VALUE/>
+</DEFAULT_TPLIB_LDFLAGS>
+<DEFAULT_TPDLL_LDFLAGS Doc="ISDEFAULT_TPDLL_LDFLAGS" Label="Default Link Flags for the TP dll" >
+<COMMENT/>
+<VALUE/>
+</DEFAULT_TPDLL_LDFLAGS>
+<INIFIELD Doc="ISOTHERS" >
+<COMMENT/>
+<KEY>TARGETNAME</KEY>
+<VALUE>PPC603FH:vxworks66</VALUE>
+</INIFIELD>
+<INIFIELD Doc="ISOTHERS" >
+<COMMENT/>
+<KEY>COMPILER</KEY>
+<VALUE>dcc</VALUE>
+</INIFIELD>
+<INIFIELD Doc="ISOTHERS" >
+<COMMENT/>
+<KEY>PREPROCESSOR</KEY>
+<VALUE>dcc</VALUE>
+</INIFIELD>
+<INIFIELD Doc="ISOTHERS" >
+<COMMENT/>
+<KEY>LINKER</KEY>
+<VALUE>dld</VALUE>
+</INIFIELD>
+<INIFIELD Doc="ISOTHERS" >
+<COMMENT/>
+<KEY>DEBUGGER</KEY>
+<VALUE>C:\WindRiver\workbench-3.3\wrwb\platform\x86-win32\eclipse\wrwb-x86-win32.exe</VALUE>
+</INIFIELD>
+<INIFIELD Doc="ISOTHERS" >
+<COMMENT/>
+<KEY>NM</KEY>
+<VALUE>ddump</VALUE>
+</INIFIELD>
+<INIFIELD Doc="ISOTHERS" >
+<COMMENT/>
+<KEY>NMFLAGS</KEY>
+<VALUE>-Ng</VALUE>
+</INIFIELD>
+<INIFIELD Doc="ISOTHERS" >
+<COMMENT/>
+<KEY>ENV_WIND_BASE</KEY>
+<VALUE>C:\WindRiver\vxworks-cert-6.6.4.1</VALUE>
+</INIFIELD>
+<INIFIELD Doc="ISOTHERS" >
+<COMMENT/>
+<KEY>ENV_SET_IF_NOT_SET_WIND_HOST_TYPE</KEY>
+<VALUE/>
+</INIFIELD>
+<INIFIELD Doc="ISOTHERS" >
+<COMMENT/>
+<KEY>ENV_TORN_INCLUDE</KEY>
+<VALUE>C:\WindRiver\vxworks-cert-6.6.4.1\target/config/hlc8280,C:\WindRiver\vxworks-cert-6.6.4.1\target/h,C:\WindRiver\vxworks-cert-6.6.4.1\target/config/comps/src,C:\WindRiver\vxworks-cert-6.6.4.1\target/h/wrn/coreip,C:\WindRiver\vxworks-cert-6.6.4.1\target/src/drv,C:\WindRiver\vxworks-cert-6.6.4.1\target/config/hlc8280/h,C:\WindRiver\vxworks-cert-6.6.4.1\target/src/hwif,C:\WindRiver\vxworks-cert-6.6.4.1\target/src/hwif/h,C:\WindRiver/components/ip_net2-6.6/osconfig/vxworks/src</VALUE>
+</INIFIELD>
+<INIFIELD Doc="ISOTHERS" >
+<COMMENT/>
+<KEY>ENV_PATH</KEY>
+<VALUE>C:\WindRiver\diab\5.6.0.0\WIN32\bin;$ENV{'PATH'}</VALUE>
+</INIFIELD>
+<INIFIELD Doc="ISOTHERS" >
+<COMMENT/>
+<KEY>ENV_LIB</KEY>
+<VALUE>C:\WindRiver\diab\5.6.0.0\WIN32\lib;$ENV{'LIB'}</VALUE>
+</INIFIELD>
+<INIFIELD Doc="ISOTHERS" >
+<COMMENT/>
+<KEY>USER_INCLUDE_PATH</KEY>
+<VALUE>..\WindRiver\components\ip_net2-6.6\ipcom\port\vxworks\config,..\WindRiver\components\ip_net2-6.6\ipcom\include,..\WindRiver\components\ip_net2-6.6\ipcom,..\WindRiver\components\ip_net2-6.6\ipcom\config,..\WindRiver\components\ip_net2-6.6\ipcom\port\vxworks\include,..\WindRiver\components\ip_net2-6.6\ipnet2\include,..\WindRiver\components\ip_net2-6.6\ipnet2\config,..\WindRiver\components\ip_net2-6.6\ipnet2\src,C:\WindRiver\vxworks-cert-6.6.4.1\target\h\wrn\coreip\net,C:\WindRiver\vxworks-cert-6.6.4.1\target\h\rpc,C:\WindRiver\diab\5.6.0.0\include\diab</VALUE>
+</INIFIELD>
+</SETTINGS>
+</IS_C>
+<IS_CPP Doc="IS" Label="For C++" >
+<SETTINGS>
+<COMMENT/>
+<SRCEXT Doc="ISSRCEXT" Label="Source File Extension" >
+<COMMENT/>
+<VALUE>cpp</VALUE>
+</SRCEXT>
+<OBJEXT Doc="ISOBJEXT" Label="Object File Extension" >
+<COMMENT/>
+<VALUE>o</VALUE>
+</OBJEXT>
+<EXEEXT Doc="ISEXEEXT" Label="Executable File Extension" >
+<COMMENT/>
+<VALUE>out</VALUE>
+</EXEEXT>
+<ASMEXT Doc="ISASMEXT" Label="asm File Extension" >
+<COMMENT/>
+<VALUE/>
+</ASMEXT>
+<DLLEXT Doc="ISDLLEXT" Label="dll File Extension" >
+<COMMENT/>
+<VALUE>dll</VALUE>
+</DLLEXT>
+<LIBEXT Doc="ISLIBEXT" Label="Library File Extension" >
+<COMMENT/>
+<VALUE>lib</VALUE>
+</LIBEXT>
+<DEFAULT_INCLUDE_PATHS Doc="ISDEFAULT_INCLUDE_PATHS" Label="Default Include Paths" >
+<COMMENT/>
+<VALUE/>
+</DEFAULT_INCLUDE_PATHS>
+<DEFAULT_DEFINES Doc="ISDEFAULT_DEFINES" Label="Default Defines" >
+<COMMENT/>
+<VALUE/>
+</DEFAULT_DEFINES>
+<DEFAULT_CPPFLAGS Doc="ISDEFAULT_CPPFLAGS" Label="Default Preprocessing Flags" >
+<COMMENT/>
+<VALUE/>
+</DEFAULT_CPPFLAGS>
+<DEFAULT_CFLAGS Doc="DEFAULT_CFLAGS" Label="Default Compilation Flags" >
+<COMMENT/>
+<VALUE/>
+</DEFAULT_CFLAGS>
+<DEFAULT_LDFLAGS Doc="ISDEFAULT_LDFLAGS" Label="Defautl Link Flags" >
+<COMMENT/>
+<VALUE/>
+</DEFAULT_LDFLAGS>
+<DEFAULT_LIBRARY_PATHS Doc="ISDEFAULT_LIBRARY_PATHS" Label="Default Library Paths" >
+<COMMENT/>
+<VALUE/>
+</DEFAULT_LIBRARY_PATHS>
+<DEFAULT_LIBS Doc="ISDEFAULT_LIBS" Label="Default Additional Library" >
+<COMMENT/>
+<VALUE/>
+</DEFAULT_LIBS>
+<DEFAULT_ASMFLAGS Doc="ISDEFAULT_ASMFLAGS" Label="Default Assembly Flags" >
+<COMMENT/>
+<VALUE/>
+</DEFAULT_ASMFLAGS>
+<DEFAULT_TPLIB_CCFLAGS Doc="ISDEFAULT_TPLIB_CCFLAGS" Label="Default Compilation Flags for the TP library" >
+<COMMENT/>
+<VALUE/>
+</DEFAULT_TPLIB_CCFLAGS>
+<DEFAULT_TPDLL_CCFLAGS Doc="ISDEFAULT_TPDLL_CCFLAGS" Label="Default Compilation Flags for the TP dll" >
+<COMMENT/>
+<VALUE/>
+</DEFAULT_TPDLL_CCFLAGS>
+<DEFAULT_TPLIB_LDFLAGS Doc="ISDEFAULT_TPLIB_LDFLAGS" Label="Default Link Flags for the TP library" >
+<COMMENT/>
+<VALUE/>
+</DEFAULT_TPLIB_LDFLAGS>
+<DEFAULT_TPDLL_LDFLAGS Doc="ISDEFAULT_TPDLL_LDFLAGS" Label="Default Link Flags for the TP dll" >
+<COMMENT/>
+<VALUE/>
+</DEFAULT_TPDLL_LDFLAGS>
+<INIFIELD Doc="ISOTHERS" >
+<COMMENT/>
+<KEY>TARGETNAME</KEY>
+<VALUE/>
+</INIFIELD>
+<INIFIELD Doc="ISOTHERS" >
+<COMMENT/>
+<KEY>COMPILER</KEY>
+<VALUE/>
+</INIFIELD>
+<INIFIELD Doc="ISOTHERS" >
+<COMMENT/>
+<KEY>PREPROCESSOR</KEY>
+<VALUE/>
+</INIFIELD>
+<INIFIELD Doc="ISOTHERS" >
+<COMMENT/>
+<KEY>LINKER</KEY>
+<VALUE/>
+</INIFIELD>
+<INIFIELD Doc="ISOTHERS" >
+<COMMENT/>
+<KEY>NM</KEY>
+<VALUE/>
+</INIFIELD>
+<INIFIELD Doc="ISOTHERS" >
+<COMMENT/>
+<KEY>NMFLAGS</KEY>
+<VALUE/>
+</INIFIELD>
+<INIFIELD Doc="ISOTHERS" >
+<COMMENT/>
+<KEY>DEBUGGER</KEY>
+<VALUE/>
+</INIFIELD>
+<INIFIELD Doc="ISOTHERS" >
+<COMMENT/>
+<KEY>ENV_WIND_BASE</KEY>
+<VALUE/>
+</INIFIELD>
+<INIFIELD Doc="ISOTHERS" >
+<COMMENT/>
+<KEY>ENV_SET_IF_NOT_SET_WIND_HOST_TYPE</KEY>
+<VALUE/>
+</INIFIELD>
+<INIFIELD Doc="ISOTHERS" >
+<COMMENT/>
+<KEY>ENV_PATH</KEY>
+<VALUE/>
+</INIFIELD>
+<INIFIELD Doc="ISOTHERS" >
+<COMMENT/>
+<KEY>ENV_LIB</KEY>
+<VALUE/>
+</INIFIELD>
+<INIFIELD Doc="ISOTHERS" >
+<COMMENT/>
+<KEY>ENV_TORN_INCLUDE</KEY>
+<VALUE/>
+</INIFIELD>
+</SETTINGS>
+</IS_CPP>
+</IS>
+<BUILD Doc="BUILDPROCESS" Label="Build Settings" >
+<COMMENT/>
+<ASSEMBLER Doc="ASSEMBLER" Label="Assembler function" >
+<COMMENT/>
+<VALUEFCTPERL>
+<COMMENT/>
+<PROTO>sub atl_asm($$$$\@\@)
+{
+	my ( $lang,$src,$out,$cflags,$Defines,$Includes) = @_;</PROTO>
+<VALUE>
+	my $defines = &quot;&quot;;
+	foreach (@$Defines) { $defines.=&quot; -D$_&quot;; }
+	$defines.=&quot; -DRTRT_ENTRY=$ATL_MAIN_PROCEDURE&quot; if ($ATL_MAIN_PROCEDURE ne '');
+	my $includes = &quot;&quot;;
+	#my $cnt=0;
+	foreach(@$Includes) { $includes.=&quot; \&quot;-I$_\&quot;&quot;; }
+	#$cnt = $cnt + 1; print&quot;$cnt: $includes\n&quot;; 
+	$includes.=&quot; -I.&quot;;
+	$includes.=&quot; \&quot;-I$ENV{'TORN_INCLUDE'}\&quot;&quot;;
+	my $cc=$Ini{'COMPILER'};
+	unlink($out);
+
+# Added to support entry name
+	my ($d,$b,$e)=SplitFileName($src);
+	if ($b eq &quot;TP&quot;) {
+	     $defines.=&quot; -DSTR_ENTRY=\&quot;$ATL_MAIN_PROCEDURE\&quot; &quot; if ($ATL_MAIN_PROCEDURE ne '');
+	}
+	my $as_defs=$Ini{'ASM_DEFINES'};
+	my $ret=SystemP(&quot;$cc -c $cflags $as_defs $includes \&quot;$src\&quot; -o \&quot;$out\&quot;&quot;);
+</VALUE>
+<TAIL>}</TAIL>
+</VALUEFCTPERL>
+</ASSEMBLER>
+<COMPILATION Doc="COMPILATION" Label="Compilation function" >
+<COMMENT/>
+<VALUEFCTPERL>
+<COMMENT/>
+<PROTO>sub atl_cc($$$$\@\@)
+{
+	my ( $lang,$src,$out,$cflags,$Defines,$Includes) = @_;</PROTO>
+<VALUE>	my $defines = &quot;&quot;;
+	foreach (@$Defines) { $defines.=&quot; -D$_&quot;; }
+	$defines.=&quot; -DRTRT_ENTRY=$ATL_MAIN_PROCEDURE&quot; if ($ATL_MAIN_PROCEDURE ne '');
+	my $includes = &quot;&quot;;
+	foreach(@$Includes) { $includes.=&quot; \&quot;-I$_\&quot;&quot;; }
+	$includes.=&quot; -I.&quot;;
+	$includes.=&quot; \&quot;-I$ENV{'TORN_INCLUDE'}\&quot;&quot;;
+	my $cc=$Ini{'COMPILER'};
+	unlink($out);
+
+# Added to support entry name
+	my ($d,$b,$e)=SplitFileName($src);
+	if ($b eq &quot;TP&quot;) {
+	     $defines.=&quot; -DSTR_ENTRY=\&quot;$ATL_MAIN_PROCEDURE\&quot; &quot; if ($ATL_MAIN_PROCEDURE ne '');
+	}
+
+	#my $ret=SystemP(&quot;$cc -c -Xsuppress-warnings $cflags $defines $includes \&quot;$src\&quot; -o \&quot;$out\&quot;&quot;);
+	my $tflags=$Ini{'DEFAULT_NCFLAGS'};
+	#print &quot;Build started=$INTDIR\n&quot;;
+	#Build the SysLib file
+	my $PartSysCFlgs=&quot;-Xmake-dependency=0x04 -Xpointers-volatile -Xsmall-const=8 -Xsmall-data=8&quot;;
+	my $file=&quot;$INTDIR/sysLib.o&quot;;
+	if (-f $file) {} else 	{
+	my $ret=SystemP(&quot;$cc -c $tflags $includes $PartSysCFlgs C:/TXB_BUILD/BSP/HlcBSP_Cert/sysLib.c -o $INTDIR\\sysLib.o&quot;);
+	print &quot;Syslib compiled=$ret\n&quot;;
+	return($ret) if($ret!=0);
+	}
+	
+	#Build the UsrAppInit file
+	my $file=&quot;$INTDIR/usrAppInit.o&quot;;
+	if (-f $file) {} else 	{
+	my $ret=SystemP(&quot;$cc $cflags $includes -Xmake-dependency=0x04 -c C:/TXB_Build/Prj_files/usrAppInit.c -o $INTDIR\\usrAppInit.o&quot;);
+	print &quot;Compiled UsrApp=$ret\n&quot;;
+	}
+
+	#Build the UsrRtpAppInit file
+	my $file=&quot;$INTDIR/usrRtpAppInit.o&quot;;
+	if (-f $file) {} else 	{
+	my $ret=SystemP(&quot;$cc $cflags $includes -Xmake-dependency=0x04 -c C:/TXB_Build/Prj_files/usrRtpAppInit.c -o $INTDIR\\usrRtpAppInit.o&quot;);
+	print &quot;Compiled UsrRtpApp=$ret\n&quot;;
+	}
+
+	#Build the PrjConfig file
+	my $usrPath=$Ini{'USER_INCLUDE_PATH'};
+	my $file=&quot;$INTDIR/prjConfig.o&quot;;
+	if (-f $file) {} else 	{
+	my $ret=SystemP(&quot;$cc -c $tflags $includes $usrPath $PartSysCFlgs C:/TXB_Build/Prj_files/prjConfig.c -o $INTDIR\\prjConfig.o&quot;);
+	print &quot;retturn of PrjConfig=$ret\n&quot;;
+	}
+
+	#Build the LinkSyms file
+	my $file=&quot;$INTDIR/linkSyms.o&quot;;
+	if (-f $file) {} else 	{
+	my $ret=SystemP(&quot;$cc -c $cflags $includes $PartSysCFlgs C:/TXB_Build/Prj_files/linkSyms.c -o $INTDIR\\linkSyms.o&quot;);
+	print &quot;Compiled LinkSyms=$ret\n&quot;;
+	return($ret) if($ret!=0);
+	}
+	
+	#Check if TP.c to be compiled
+	if ($src =~ /TP\.c$/)
+	{
+	my $ret=SystemP(&quot;$cc -c -Xsuppress-warnings $cflags $defines $includes \&quot;$src\&quot; -o \&quot;$out\&quot;&quot;);
+	}
+	else
+	{
+
+             $txbpath=&quot;\&quot;-IC:/WindRiver/vxworks-cert-6.6.4.1/target/h/arch/ppc\&quot; \&quot;-IC:/TXB_BUILD/ACS/acsM2S/acsIntcM2S\&quot; \&quot;-IC:/TXB_BUILD/TXB_NB_APP/appSteeringwheelBreak\&quot; \&quot;-IC:/TXB_BUILD/TXB_NB_APP/appYawRateFilter\&quot; \&quot;-IC:/TXB_BUILD/BSW/bswCommon\&quot; \&quot;-IC:/TXB_BUILD/BSP/HlcBSP_Cert/mnt\&quot; \&quot;-IC:/TXB_BUILD/BSP/HlcBSP_Cert\&quot; \&quot;-IC:/WindRiver/vxworks-cert-6.6.4.1/target/h\&quot; \&quot;-IC:/WindRiver/vxworks-cert-6.6.4.1/target/h/types\&quot; \&quot;-IC:/WindRiver/vxworks-cert-6.6.4.1/target/config/comps/src\&quot; \&quot;-IC:/WindRiver/vxworks-cert-6.6.4.1/target/h/wrn/coreip\&quot; \&quot;-IC:/WindRiver/vxworks-cert-6.6.4.1/target/src/drv\&quot; \&quot;-IC:/WindRiver/components/ip_net2-6.6/osconfig/vxworks/src\&quot; \&quot;-IC:/TXB_BUILD/BSP/HlcBSP_Cert/h\&quot; \&quot;-IC:/WindRiver/vxworks-cert-6.6.4.1/target/src/hwif\&quot; \&quot;-IC:/TXB_BUILD/CCP\&quot; \&quot;-IC:/TXB_BUILD/BSW/bswManager\&quot; \&quot;-IC:/TXB_BUILD/BSW/bswCommon/bswUtils\&quot; \&quot;-IC:/TXB_BUILD/BSW/bswCommon/bswDispatcher\&quot; \&quot;-IC:/TXB_BUILD/BSW/bswCommon/bswScheduler\&quot; \&quot;-IC:/TXB_BUILD/BSW/bswInitShutdown\&quot; \&quot;-IC:/TXB_BUILD/BSW/bswCommunicator/bswSerial\&quot; \&quot;-IC:/TXB_BUILD/BSW/bswCommunicator/bswDiscrete\&quot; \&quot;-IC:/TXB_BUILD/BSW/bswCommunicator/bswAnalog\&quot; \&quot;-IC:/TXB_BUILD/BSW/bswCommunicator/bswCanBus\&quot; \&quot;-IC:/TXB_BUILD/BSW/bswCommunicator/bswArinc429\&quot; \&quot;-IC:/TXB_BUILD/ACS/acsManager/acsArincMngr\&quot; \&quot;-IC:/TXB_BUILD/ACS/acsManager/acsAnalogMngr\&quot; \&quot;-IC:/TXB_BUILD/ACS/acsManager/acsSerialMngr\&quot; \&quot;-IC:/TXB_BUILD/ACS/acsManager/acsCanBusMngr\&quot; \&quot;-IC:/TXB_BUILD/ACS/acsManager/acsDiscreteMngr\&quot; \&quot;-IC:/TXB_BUILD/ACS/acsCommon/acsDispatcher\&quot; \&quot;-IC:/TXB_BUILD/ACS/acsCommon\&quot; \&quot;-IC:/TXB_BUILD/ACS/acsDb2Sp\&quot; \&quot;-IC:/TXB_BUILD/ACS/acsProxy/acsAtcProxy/AtcIcdM\&quot; \&quot;-IC:/TXB_BUILD/ACS/acsProxy/acsDpProxy/DpIcdM\&quot; \&quot;-IC:/TXB_BUILD/ACS/acsProxy/acsAhrsProxy\&quot; \&quot;-IC:/TXB_BUILD/ACS/acsProxy/acsAtcProxy\&quot; \&quot;-IC:/TXB_BUILD/ACS/acsProxy/acsDgpsProxy\&quot; \&quot;-IC:/TXB_BUILD/ACS/acsProxy/acsTasProxy/TasIcdM\&quot; \&quot;-IC:/TXB_BUILD/ACS/acsProxy/acsDpvProxy/DpvIcdM\&quot; \&quot;-IC:/TXB_BUILD/ACS/acsProxy/acsDcProxy/DcIcdM\&quot; \&quot;-IC:/TXB_BUILD/ACS/acsProxy/acsAcProxy/AcIcdM\&quot; \&quot;-IC:/TXB_BUILD/ACS/acsM2S/acsAlnM2S\&quot; \&quot;-IC:/TXB_BUILD/ACS/acsM2S/acsDgpsM2S\&quot; \&quot;-IC:/TXB_BUILD/ACS/acsM2S/acsDpM2S\&quot; \&quot;-IC:/TXB_BUILD/ACS/acsM2S/acsAtcM2S\&quot; \&quot;-IC:/TXB_BUILD/ACS/acsM2S/acsBswM2S\&quot; \&quot;-IC:/TXB_BUILD/ACS/acsM2S/acsWmlM2S\&quot; \&quot;-IC:/TXB_BUILD/ACS/acsM2S/acsIsM2S\&quot; \&quot;-IC:/TXB_BUILD/ACS/acsM2S/acsCsM2S\&quot; \&quot;-IC:/TXB_BUILD/ACS/acsM2S/acsMdM2S\&quot; \&quot;-IC:/TXB_BUILD/ACS/acsM2S/acsTasM2S\&quot; \&quot;-IC:/TXB_BUILD/ACS/acsM2S/acsYrsM2S\&quot; \&quot;-IC:/TXB_BUILD/ACS/acsM2S/acsAhrsM2S\&quot; \&quot;-IC:/TXB_BUILD/ACS/acsM2S/acsVlM2S\&quot; \&quot;-IC:/TXB_BUILD/ACS/acsM2S/acsDcM2S\&quot; \&quot;-IC:/TXB_BUILD/ACS/acsM2S/acsDfM2S\&quot; \&quot;-IC:/TXB_BUILD/ACS/acsM2S/acsDpvM2S\&quot; \&quot;-IC:/TXB_BUILD/ACS/acsM2S/acsAcM2S\&quot;  \&quot;-IC:/TXB_BUILD/ACS/acsM2S/acsLtM2S\&quot; \&quot;-IC:/TXB_BUILD/ACS/acsM2S/acsLvcM2S\&quot; \&quot;-IC:/TXB_BUILD/ACS/acsM2S/acsPduM2S\&quot; \&quot;-IC:/TXB_BUILD/ACS/acsM2S/acsSwM2S\&quot; \&quot;-IC:/TXB_BUILD/ACS/acsProxy/acsYrsProxy\&quot; \&quot;-IC:/TXB_BUILD/ACS/acsProxy/acsDbProxy\&quot; \&quot;-IC:/TXB_BUILD/ACS/acsProxy/acsLvcProxy\&quot; \&quot;-IC:/TXB_BUILD/ACS/acsProxy/acsLtProxy\&quot; \&quot;-IC:/TXB_BUILD/ACS/acsProxy/acsDfProxy/DfIcdM\&quot; \&quot;-IC:/TXB_BUILD/ACS/acsProxy/acsWmlProxy\&quot; \&quot;-IC:/TXB_BUILD/ACS/acsProxy/acsCanBusOutBuilder\&quot; \&quot;-IC:/TXB_BUILD/ACS/acsProxy/acsDfProxy\&quot; \&quot;-IC:/TXB_BUILD/ACS/acsProxy/acsIntcProxy/IntcIcdM\&quot; \&quot;-IC:/TXB_BUILD/ACS/acsProxy/acsDcProxy\&quot; \&quot;-IC:/TXB_BUILD/ACS/acsProxy/acsTasProxy\&quot; \&quot;-IC:/TXB_BUILD/ACS/acsProxy/acsLtProxy/LtIcdM\&quot; \&quot;-IC:/TXB_BUILD/ACS/acsProxy/acsDpProxy\&quot; \&quot;-IC:/TXB_BUILD/ACS/acsProxy/acsPduProxy/PduIcdM\&quot; \&quot;-IC:/TXB_BUILD/ACS/acsProxy/acsSwProxy/SwIcdM\&quot; \&quot;-IC:/TXB_BUILD/ACS/acsProxy/acsCanBusOutBuilder/HlcIcdM\&quot; \&quot;-IC:/TXB_BUILD/ACS/acsProxy/acsCanBusOutBuilder/HlcIcdT\&quot; \&quot;-IC:/TXB_BUILD/ACS/acsProxy/acsAlnProxy/AlnIcdM\&quot; \&quot;-IC:/TXB_BUILD/ACS/acsProxy/acsMdProxy\&quot; \&quot;-IC:/TXB_BUILD/ACS/acsProxy/acsLvcProxy/LvcIcdM\&quot; \&quot;-IC:/TXB_BUILD/ACS/acsProxy/acsLogProxy/LogIcdM\&quot; \&quot;-IC:/TXB_BUILD/ACS/acsProxy/acsAhrsProxy/AhrsIcdM\&quot; \&quot;-IC:/TXB_BUILD/ACS/acsProxy/acsSlamProxy\&quot; \&quot;-IC:/TXB_BUILD/ACS/acsProxy/acsMdProxy/MdIcdM\&quot; \&quot;-IC:/TXB_BUILD/ACS/acsProxy/acsWmlProxy/WmlIcdM\&quot; \&quot;-IC:/TXB_BUILD/ACS/acsProxy/acsVlProxy/VlIcdM\&quot; \&quot;-IC:/TXB_BUILD/ACS/acsProxy/acsSilProxy\&quot; \&quot;-IC:/TXB_BUILD/ACS/acsProxy/acsYrsProxy/YrsIcdM\&quot; \&quot;-IC:/TXB_BUILD/ACS/acsProxy/acsAcProxy\&quot; \&quot;-IC:/TXB_BUILD/ACS/acsProxy/acsCsProxy\&quot; \&quot;-IC:/TXB_BUILD/ACS/acsProxy/acsAlnProxy\&quot; \&quot;-IC:/TXB_BUILD/ACS/acsProxy/acsDgpsProxy/DgpsIcdM\&quot; \&quot;-IC:/TXB_BUILD/ACS/acsProxy/acsIntcProxy\&quot; \&quot;-IC:/TXB_BUILD/ACS/acsProxy/acsLogProxy\&quot; \&quot;-IC:/TXB_BUILD/ACS/acsProxy/acsVlProxy\&quot; \&quot;-IC:/TXB_BUILD/ACS/acsProxy/acsDpvProxy\&quot; \&quot;-IC:/TXB_BUILD/ACS/acsProxy/acsPduProxy\&quot; \&quot;-IC:/TXB_BUILD/ACS/acsProxy/acsSwProxy\&quot; \&quot;-IC:/TXB_BUILD/TXB_NB_APP/appCommon/appSimulinkCommon\&quot; \&quot;-IC:/TXB_BUILD/TXB_NB_APP/appEngineManager\&quot; \&quot;-IC:/TXB_BUILD/TXB_NB_APP/appSafetyModule\&quot; \&quot;-IC:/TXB_BUILD/TXB_NB_APP/appSteeringControl\&quot; \&quot;-IC:/TXB_BUILD/TXB_NB_APP/appDemandManagement\&quot; \&quot;-IC:/TXB_BUILD/TXB_NB_APP/appModeManager\&quot; \&quot;-IC:/TXB_BUILD/TXB_NB_APP/appDamperControl\&quot; \&quot;-IC:/TXB_BUILD/TXB_NB_APP/appLocalization\&quot; \&quot;-IC:/TXB_BUILD/TXB_NB_APP/appForceControl\&quot; \&quot;-IC:/TXB_BUILD/TXB_NB_APP/appMissionOperation\&quot; \&quot;-IC:/TXB_BUILD/TXB_NB_APP/appCommon/appDispatcher\&quot; \&quot;-IC:/TXB_BUILD/TXB_NB_APP/appHealthMonitor\&quot; \&quot;-IC://TXB_Build//ACS//acsProxy//acsSilProxy//SilIcdM\&quot; \&quot;-IC:/TXB_BUILD/ACS/acsTr/acsLocTrF\&quot; \&quot;-IC:/TXB_BUILD/ACS/acsTr/acsLocTrS\&quot; \&quot;-IC:/TXB_BUILD/ACS/acsTr/acsMoTrF\&quot; \&quot;-IC:/TXB_BUILD/ACS/acsTr/acsMoTrS\&quot;&quot;;
+              
+	$includes=$txbpath;
+	#print&quot;$cc -c -Xsuppress-warnings $cflags $defines $includes \&quot;$src\&quot; -o \&quot;$out\&quot;\n&quot;;
+	my $ret=SystemP(&quot;$cc -c -Xsuppress-warnings $cflags $defines $includes \&quot;$src\&quot; -o \&quot;$out\&quot;&quot;);
+	print &quot;Compiled $src  = $ret $out\n&quot;;
+	return($ret) if($ret!=0);
+	}
+
+
+</VALUE>
+<TAIL>}</TAIL>
+</VALUEFCTPERL>
+</COMPILATION>
+<PREPROCESSING Doc="PREPROCESSING" Label="Preprocessing function" >
+<COMMENT/>
+<VALUEFCTPERL>
+<COMMENT/>
+<PROTO>sub atl_cpp($$$$\@\@)
+{
+	my ( $lang,$src,$out,$cflags,$Defines,$Includes) = @_;</PROTO>
+<VALUE>	my $defines = &quot;&quot;;
+	foreach (@$Defines) { $defines.=&quot; -D$_&quot;; }
+	$defines.=&quot; -DRTRT_ENTRY=$ATL_MAIN_PROCEDURE&quot; if ($ATL_MAIN_PROCEDURE ne '');
+	my $includes = &quot;&quot;;
+	foreach(@$Includes) { $includes.=&quot; \&quot;-I$_\&quot;&quot;; }
+	$includes.=&quot; -I.&quot;;
+	#$includes.=&quot; \&quot;-I$ENV{'TORN_INCLUDE'}\&quot;&quot;;
+
+	my $cc=$Ini{'PREPROCESSOR'};
+	unlink($out);
+	#my $ret=SystemP(&quot;$cc -E $cflags $defines $includes \&quot;$src\&quot; > atltmp.i&quot;);
+
+if ($src =~ /\.c$/) {
+my $ret=SystemP(&quot;$cc -E $cflags $defines $includes \&quot;$src\&quot; > atltmp.i&quot;);
+}
+if ($src =~ /\.ptu$/) {
+my $ret=SystemP(&quot;$cc -E $cflags $defines $includes \&quot;$src\&quot; > atltmp.i&quot;);
+}
+	return($ret) if ($ret!=0);
+	SystemP(&quot;$BINDIR/fixlines&quot;,&quot;atltmp.i&quot;,$out);
+	unlink(&quot;atltmp.i&quot;);
+	return($ret);</VALUE>
+<TAIL>}
+1;</TAIL>
+</VALUEFCTPERL>
+</PREPROCESSING>
+<LIBRARY Doc="LIBRARY" Label="Library function" >
+<COMMENT/>
+<VALUEFCTPERL>
+<COMMENT/>
+<PROTO>sub atl_lib($\@$\@$\@$)
+{
+	my ($exe,$Objects,$ldflags,$LibPath,$libs,$OtherLibs,$Format) = @_;</PROTO>
+<VALUE>
+	print &quot;WARNING: This TDP is not able to build library\n&quot;;
+</VALUE>
+<TAIL>}</TAIL>
+</VALUEFCTPERL>
+</LIBRARY>
+<LINK Doc="LINK" Label="Link function" >
+<COMMENT/>
+<VALUEFCTPERL>
+<COMMENT/>
+<PROTO>sub atl_link($\@$\@$\@)
+{
+	my ($exe,$Objects,$ldflags,$LibPath,$libs,$OtherLibs) = @_;</PROTO>
+<VALUE>	my $linkPath=$Ini{'LINKER'};
+	my $nmPath=$Ini{'NM'};
+	my $nmFlags=$Ini{'NMFLAGS'};
+
+	my $ret;
+	my $objects = &quot;&quot;;
+#Remaining files need to be compiled.
+$dir = &quot;C:\\TXB_Build&quot;;
+
+# All the processable directories are added here
+@use_list = (&quot;C:/TXB_Build/ACS&quot;, &quot;C:/TXB_Build/BSW&quot;, &quot;C:/TXB_Build/CCP&quot;, &quot;C:/TXB_Build/TXB_NB_APP&quot;);
+my @addCFilesList;
+
+&amp;listdirectory($dir);
+
+sub listdirectory
+{
+ local($dir);
+ local(@lines);
+ local($subdir);
+ local($lvl_counter);
+ local($list_length);
+ local($cfl);
+
+ $dir = $_[0];
+ if(opendir (DIR, $dir))
+ {
+   @lines = readdir (DIR);
+   closedir (DIR);
+   $lvl_counter = 2;
+   $list_length = ( scalar @lines );
+   while ($lvl_counter &lt; $list_length)
+   {
+      $cfl = &quot;&quot;;
+      $gfile = &quot;&quot;;
+      $subdir = $dir.&quot;\\&quot;.$lines[$lvl_counter];
+      if(opendir (SUBDIR, $subdir))
+      {
+         closedir (SUBDIR);
+         $chkdir = $subdir;
+         if (check_dir_match($subdir) != 0) {
+         &amp;listdirectory($subdir);
+         
+         }
+      }
+      else
+      {
+         $cfl = &amp;get_notcompiled_c($INTDIR, $lines[$lvl_counter],$dir); 
+         
+      }
+      
+      $lvl_counter++;
+      }
+   }
+}
+
+sub check_dir_match {
+   local($curdir);
+   $curdir = $_[0];
+   $curdir =~ tr/\\/\//;
+   foreach $dirlist (@use_list) {#print $dirlist . &quot; - &quot; . $curdir . &quot;\n&quot;;
+      if ($curdir =~ /^$dirlist/i) {
+          return 1;
+      }
+   }
+   return 0;
+}
+
+sub get_notcompiled_c {
+
+my $cflags=$Ini{'DEFAULT_CFLAGS'};
+
+   local($ldir);
+   local($lfile);
+   local($clfile);
+
+   $lfile = $_[1];
+   $ldir =  $_[0];
+   $clfile = &quot;&quot;;
+   
+   if ($lfile =~ m/\.c$/) {
+      $clfile = $lfile;
+
+      $lfile =~ s/\.c$/\.o/;
+	  $lfile = $ldir.&quot;\\&quot;.$lfile;
+               push @$Objects, $lfile;
+	  #print&quot;Object @$Objects\n&quot;;
+	  if (-f $lfile) {
+	     #$clfile = &quot;&quot;;
+	  }
+	  else {
+	  #Not compiled C files
+	  $cfile=&quot;$_[2]\\$_[1]&quot;;
+	  #my($lang,$src,$out,$cflags,$Defines,$Includes )
+	  my $ret=&amp;atl_cc(&quot;C&quot;,$cfile, $lfile, $cflags, $Defines, $Includes);
+	  
+	  #print&quot;Compilation of $cfile = $ret $lfile \n&quot;;	
+	  }
+   }
+   $gfile = $clfile;
+   #return $clfile;
+}
+
+#print&quot;All Objects ........@$Objects\n&quot;;
+
+	unlink(&quot;rtrtobjlist.lst&quot;);
+             unlink(&quot;sourceobjlist.lst&quot;);
+             open (LST, &quot;>sourceobjlist.lst&quot;) ;
+	foreach(@$Objects) {
+		print LST $_ if(/\.o$/);
+                          next if(/\.out$/);
+                           print LST &quot;\n&quot;;
+		next if(/TP\.o/);
+
+                         	$objects.=&quot; \&quot;$_\&quot;&quot;;
+	}
+
+	#print LST &quot;$exe\n&quot;;
+
+	close LST;
+        my $libpath = &quot;&quot;;
+        foreach $L ( @$LibPath ) {
+            $libpath .= &quot; \&quot;-L$L\&quot;&quot; ;
+        }
+
+
+copy(&quot;$TARGETDIR/cmd/link.RAM&quot;,&quot;link.RAM&quot;);
+
+ my $partLdflag = &quot;-lstl -larch -lhwdb -lcplus -ldiabcplus -laim -lboot -lc_wr -lcommoncc -ldcc -ldebug -ldevice -ldrv -ldshm -ldsi -lerfLib -lfp -lgcc -lnetapps -lnetcommon -lnetwrap -los -lpxtrace -lrpc -lssi -ltffs -lusb -lusb2 -lvnode -lwdb -lwind -lwindview -lxbd -lipappl -lipcom -lipcom_vxworks -lipdhcpr -lipdhcps -lipmcrypto -lipnet -lipnet_krn -lipppp -liprip -lipsntp -liptcp -lspl &quot;;
+
+
+# version.c
+$ret=&amp;atl_cc(&quot;C&quot;,&quot;C:\\WindRiver\\vxworks-cert-6.6.4.1\\target\\config\\comps\\src\\version.c&quot;,&quot;$INTDIR\\version.o&quot;,$CFLAGS.&quot; -Xdollar-in-ident -fdollars-in-identifiers &quot;,&quot;-Xsmall-const=8 -Xsmall-data=8&quot;.$CFLAGS,\@EmptyList,\@EmptyList);
+
+$ret=SystemP(&quot;dcc -DCPU_VARIANT=_83xx -g -tPPC603FH:vxworks66 -D_WRS_HARDWARE_FP -W:c:,-Xclib-optim-off -Xansi -Xlocal-data-area-static-only -Xsize-opt -W:c:,-Xmismatch-warning=2 -ew1554,1551,1552,1086,1047,1547 -ei1516,1643,1604 -Xlint -DCPU=PPC603 -DTOOL_FAMILY=diab -DTOOL=diab -DPRJ_BUILD -D_WRS_KERNEL -DIP_PORT_VXWORKS=6641 -DINET -DDEVELOPMENT=1 -DVXWORKS -DDEVELOPMENT_VARIANT=1 -DCCP -DUSE_MNLOGGER=1 -I C:TXB_Build/Maintenance/Inc -I C:TXB_Build/ACS/acsProxy/acsPduProxy -I C:/WindRiver/vxworks-cert-6.6.4.1/target/h/arch/ppc -I C:TXB_Build/ACS/acsM2S/acsIntcM2S -I C:TXB_Build/TXB_NB_APP/appSteeringwheelBreak -I C:TXB_Build/TXB_NB_APP/appYawRateFilter -I C:TXB_Build/BSW/bswCommon -I C:TXB_Build/BSP/HlcBSP_Cert/mnt -I ../inc -I C:TXB_Build/BSP/HlcBSP_Cert -I C:/WindRiver/vxworks-cert-6.6.4.1/target/h -I C:/WindRiver/vxworks-cert-6.6.4.1/target/config/comps/src -I C:/WindRiver/vxworks-cert-6.6.4.1/target/h/wrn/coreip -I C:/WindRiver/vxworks-cert-6.6.4.1/target/src/drv -I C:/WindRiver/components/ip_net2-6.6/osconfig/vxworks/src -I C:/WindRiver/components/ip_net2-6.6/osconfig/vxworks/h -I C:TXB_Build/BSP/HlcBSP_Cert/h -I C:/WindRiver/vxworks-cert-6.6.4.1/target/src/hwif -I C:TXB_Build/CCP -I C:TXB_Build/BSW/bswManager -I C:TXB_Build/BSW/bswCommon/bswUtils -I C:TXB_Build/BSW/bswCommon/bswDispatcher -I C:TXB_Build/BSW/bswCommon/bswScheduler -I C:TXB_Build/BSW/bswInitShutdown -I C:TXB_Build/BSW/bswCommunicator/bswSerial -I C:TXB_Build/BSW/bswCommunicator/bswDiscrete -I C:TXB_Build/BSW/bswCommunicator/bswAnalog -I C:TXB_Build/BSW/bswCommunicator/bswCanBus -I C:TXB_Build/BSW/bswCommunicator/bswArinc429 -I C:TXB_Build/ACS/acsManager/acsArincMngr -I C:TXB_Build/ACS/acsManager/acsAnalogMngr -I C:TXB_Build/ACS/acsManager/acsSerialMngr -I C:TXB_Build/ACS/acsManager/acsCanBusMngr -I C:TXB_Build/ACS/acsManager/acsDiscreteMngr -I C:TXB_Build/ACS/acsCommon/acsDispatcher -I C:TXB_Build/ACS/acsCommon -I C:TXB_Build/ACS/acsProxy/acsAtcProxy/AtcIcdM -I C:TXB_Build/ACS/acsProxy/acsDpProxy/DpIcdM -I C:TXB_Build/ACS/acsProxy/acsAhrsProxy -I C:TXB_Build/ACS/acsProxy/acsAtcProxy -I C:TXB_Build/ACS/acsProxy/acsDgpsProxy -I C:TXB_Build/ACS/acsProxy/acsTasProxy/TasIcdM -I C:TXB_Build/ACS/acsProxy/acsDpvProxy/DpvIcdM -I C:TXB_Build/ACS/acsProxy/acsDcProxy/DcIcdM -I C:TXB_Build/ACS/acsProxy/acsAcProxy/AcIcdM -I C:TXB_Build/ACS/acsM2S/acsAlnM2S -I C:TXB_Build/ACS/acsM2S/acsDgpsM2S -I C:TXB_Build/ACS/acsM2S/acsDpM2S -I C:TXB_Build/ACS/acsM2S/acsAtcM2S -I C:TXB_Build/ACS/acsM2S/acsBswM2S -I C:TXB_Build/ACS/acsM2S/acsWmlM2S -I C:TXB_Build/ACS/acsM2S/acsIsM2S -I C:TXB_Build/ACS/acsM2S/acsCsM2S -I C:TXB_Build/ACS/acsM2S/acsMdM2S -I C:TXB_Build/ACS/acsM2S/acsTasM2S -I C:TXB_Build/ACS/acsM2S/acsYrsM2S -I C:TXB_Build/ACS/acsM2S/acsAhrsM2S -I C:TXB_Build/ACS/acsM2S/acsVlM2S -I C:TXB_Build/ACS/acsM2S/acsDcM2S -I C:TXB_Build/ACS/acsM2S/acsDfM2S -I C:TXB_Build/ACS/acsM2S/acsDpvM2S -I C:TXB_Build/ACS/acsM2S/acsAcM2S -I C:TXB_Build/ACS/acsM2S/acsLvcM2S -I C:TXB_Build/ACS/acsM2S/acsSwM2S -I C:TXB_Build/ACS/acsProxy/acsYrsProxy -I C:TXB_Build/ACS/acsProxy/acsDbProxy -I C:TXB_Build/ACS/acsProxy/acsLvcProxy -I C:TXB_Build/ACS/acsProxy/acsDfProxy/DfIcdM -I C:TXB_Build/ACS/acsProxy/acsWmlProxy -I C:TXB_Build/ACS/acsProxy/acsCanBusOutBuilder -I C:TXB_Build/ACS/acsProxy/acsDfProxy -I C:TXB_Build/ACS/acsProxy/acsIntcProxy/IntcIcdM -I C:TXB_Build/ACS/acsProxy/acsDcProxy -I C:TXB_Build/ACS/acsProxy/acsTasProxy -I C:TXB_Build/ACS/acsProxy/acsDpProxy -I C:TXB_Build/ACS/acsProxy/acsSwProxy/SwIcdM -I C:TXB_Build/ACS/acsProxy/acsCanBusOutBuilder/HlcIcdM -I C:TXB_Build/ACS/acsProxy/acsAlnProxy/AlnIcdM -I C:TXB_Build/ACS/acsProxy/acsMdProxy -I C:TXB_Build/ACS/acsProxy/acsLvcProxy/LvcIcdM -I C:TXB_Build/ACS/acsProxy/acsAhrsProxy/AhrsIcdM -I C:TXB_Build/ACS/acsProxy/acsSlamProxy -I C:TXB_Build/ACS/acsProxy/acsMdProxy/MdIcdM -I C:TXB_Build/ACS/acsProxy/acsWmlProxy/WmlIcdM -I C:TXB_Build/ACS/acsProxy/acsVlProxy/VlIcdM -I C:TXB_Build/ACS/acsProxy/acsSilProxy -I C:TXB_Build/ACS/acsProxy/acsYrsProxy/YrsIcdM -I C:TXB_Build/ACS/acsProxy/acsAcProxy -I C:TXB_Build/ACS/acsProxy/acsCsProxy -I C:TXB_Build/ACS/acsProxy/acsAlnProxy -I C:TXB_Build/ACS/acsProxy/acsDgpsProxy/DgpsIcdM -I C:TXB_Build/ACS/acsProxy/acsIntcProxy -I C:TXB_Build/ACS/acsProxy/acsLogProxy -I C:TXB_Build/ACS/acsProxy/acsVlProxy -I C:TXB_Build/ACS/acsProxy/acsDpvProxy -I C:TXB_Build/ACS/acsProxy/acsSwProxy -I C:TXB_Build/TXB_NB_APP/appCommon/appSimulinkCommon -I C:TXB_Build/TXB_NB_APP/appEngineManager -I C:TXB_Build/TXB_NB_APP/appSafetyModule -I C:TXB_Build/TXB_NB_APP/appSteeringControl -I C:TXB_Build/TXB_NB_APP/appDemandManagement -I C:TXB_Build/TXB_NB_APP/appModeManager -I C:TXB_Build/TXB_NB_APP/appDamperControl -I C:TXB_Build/TXB_NB_APP/appLocalization -I C:TXB_Build/TXB_NB_APP/appForceControl -I C:TXB_Build/TXB_NB_APP/appMissionOperation -I C:TXB_Build/TXB_NB_APP/appCommon/appDispatcher -I C:TXB_Build/TXB_NB_APP/appHealthMonitor -Xmake-dependency=0x04 -c C:/WindRiver/vxworks-cert-6.6.4.1/target/config/comps/src/usrEntry.c -o $INTDIR\\usrEntry.o&quot;);
+
+
+$SysObjs=&quot;$INTDIR\\sysLib.o $INTDIR\\usrAppInit.o $INTDIR\\usrRtpAppInit.o $INTDIR\\prjConfig.o $INTDIR\\linkSyms.o&quot;;
+$ret=SystemP(&quot;$linkPath $ldflags $INTDIR\\version.o $SysObjs \@sourceobjlist.lst $libpath $partLdflag C:/WindRiver/vxworks-cert-6.6.4.1/target/lib/libPPC603diabvx.a -o $INTDIR\\partialImage.o&quot;);
+return($ret) if($ret!=0);
+
+
+$ret=SystemP(&quot;$nmPath $nmFlags $INTDIR\\partialImage.o $SysObjs \@sourceobjlist.lst | C:\\WindRiver\\setup\\x86-win32\\bin\\tclsh.exe  C:/WindRiver/vxworks-cert-6.6.4.1/host/resource/hutils/tcl/munch.tcl -c ppc > $INTDIR\\ctdt.c&quot;);
+	return($ret) if($ret!=0);	
+
+
+
+$ret=&amp;atl_asm(&quot;ASM&quot;,&quot;C:\\TXB_Build\\Prj_Files\\romfs_image_prj.s&quot;,&quot;$INTDIR\\romfs_image_prj.o&quot;,$ASMFLAGS.&quot; -Xdollar-in-ident -fdollars-in-identifiers &quot;.$CFLAGS,\@EmptyList,\@EmptyList);
+	return($ret) if($ret!=0);
+
+	$ret=&amp;atl_cc(&quot;C&quot;,&quot;$INTDIR\\ctdt.c&quot;,&quot;$INTDIR\\ctdt.o&quot;,$CFLAGS.&quot; -fdollars-in-identifiers &quot;.$CFLAGS,\@EmptyList,\@EmptyList);
+	return($ret) if($ret!=0);
+
+             $ret=SystemP(&quot;C:\\WindRiver\\utilities-1.0\\x86-win32\\bin\\cp.exe $INTDIR\\partialImage.o $INTDIR\\tmp.o&quot;);
+             return($ret) if($ret!=0);
+
+             $ret=SystemP(&quot;C:\\WindRiver\\utilities-1.0\\x86-win32\\bin\\true.exe $INTDIR\\tmp.o&quot;);
+             return($ret) if($ret!=0);
+$includes.=&quot;-IC:/WindRiver/vxworks-cert-6.6.4.1/target/config/hlc8280 -IC:/WindRiver/vxworks-cert-6.6.4.1/target/h -IC:/WindRiver/vxworks-cert-6.6.4.1/target/config/comps/src -IC:/WindRiver/vxworks-cert-6.6.4.1/target/h/wrn/coreip -IC:/WindRiver/vxworks-cert-6.6.4.1/target/src/drv -IC:/WindRiver/vxworks-cert-6.6.4.1/target/config/hlc8280/h -IC:/WindRiver/vxworks-cert-6.6.4.1/target/src/hwif -IC:/WindRiver/vxworks-cert-6.6.4.1/target/src/hwif/h -IC:/WindRiver/components/ip_net2-6.6/osconfig/vxworks/src&quot;;
+
+
+$ret=SystemP(&quot;C:/WindRiver/setup/x86-win32/bin/tclsh.exe C:/WindRiver/vxworks-cert-6.6.4.1/host/resource/hutils/tcl/makeSymTbl.tcl ppc $INTDIR/tmp.o $INTDIR/symTbl.c&quot;);
+
+             return($ret) if($ret!=0);
+
+$ret=&amp;atl_cc(&quot;C&quot;,&quot;$INTDIR\\symTbl.c&quot;,&quot;$INTDIR\\symTbl.o&quot;,$CFLAGS.&quot; -W:c:,-Xclib-optim-off -Xansi -Xlocal-data-area-static-only -Xsize-opt -W:c:,-Xmismatch-warning=2 -ew1554,1551,1552,1086,1047,1547 -ei1516,1643,1604 -Xlint &quot;.$CFLAGS,\@EmptyList,\@EmptyList);
+print&quot;Compiling SymTbl.C =$ret\n&quot;;
+	return($ret) if($ret!=0);
+
+$ret=SystemP(&quot;dcc -DCPU_VARIANT=_83xx -g -tPPC603FH:vxworks66 -D_WRS_HARDWARE_FP -W:c:,-Xclib-optim-off -Xansi -Xlocal-data-area-static-only -Xsize-opt -W:c:,-Xmismatch-warning=2 -ew1554,1551,1552,1086,1047,1547 -ei1516,1643,1604 -Xlint -I..  -IC:/WindRiver/vxworks-cert-6.6.4.1/target/h -IC:/WindRiver/vxworks-cert-6.6.4.1/target/config/comps/src -IC:/WindRiver/vxworks-cert-6.6.4.1/target/h/wrn/coreip -IC:/WindRiver/vxworks-cert-6.6.4.1/target/src/drv -DCPU=PPC603 -DTOOL_FAMILY=diab -DTOOL=diab -DPRJ_BUILD -D_WRS_KERNEL -IC:/WindRiver/components/ip_net2-6.6/osconfig/vxworks/src -IC:/WindRiver/components/ip_net2-6.6/osconfig/vxworks/h -IC:/WindRiver/vxworks-cert-6.6.4.1/target/src/hwif -IC:/WindRiver/vxworks-cert-6.6.4.1/target/src/hwif/h -IC:/TXB_Build/BSP/HlcBSP_Cert -DIP_PORT_VXWORKS=6641 -DINET -Xmake-dependency=0x04  -c C:/WindRiver/vxworks-cert-6.6.4.1/target/config/comps/src/dataSegPad.c -o $INTDIR\\dataSegPad.o&quot;);	                           
+
+print&quot;Compiling DataSegPad.C =$ret\n&quot;;
+
+my $linkflags = &quot;-tPPC603FH:vxworks66 -X -N -Xgenerate-paddr -e _sysInit&quot;;
+
+print&quot;Create the executable $exe\n&quot;;
+
+$ret=SystemP(&quot;$linkPath $linkflags $INTDIR\\dataSegPad.o $INTDIR\\romfs_image_prj.o $INTDIR\\partialImage.o $INTDIR\\symTbl.o $INTDIR\\ctdt.o -D_VX_START_TEXT=0x00010000 -D_VX_DATA_ALIGN=1 link.RAM -m > link.map -o \&quot;$exe\&quot;&quot;);
+
+#\&quot;$exe\&quot;
+
+print&quot;Linking to create VxWorks =$ret $exe \n&quot;;
+
+SystemP(&quot;C:/WindRiver/utilities-1.0/x86-win32/bin/true.exe $exe&quot;);
+
+SystemP(&quot;C:/WindRiver/vxworks-cert-6.6.4.1/host/x86-win32/bin/vxsize ppc -v 00800000 00010000 $exe&quot;);
+	unlink(&quot;$INTDIR\\tmp.o&quot;);
+print&quot;created VxWorks =$ret \n&quot;;
+	return($ret) if($ret!=0);
+
+</VALUE>
+<TAIL>}
+1;</TAIL>
+</VALUEFCTPERL>
+</LINK>
+<EXECUTE Doc="EXECUTION" Label="Execution function" >
+<COMMENT/>
+<VALUEFCTPERL>
+<COMMENT/>
+<PROTO>sub atl_exec($$$)
+{
+	my ($exe, $out, $parameters) = @_;</PROTO>
+<VALUE>
+	my $Debugger=$Ini{'DEBUGGER'};
+	
+	# 1. Initialise the files for starting the execution
+	#    (a). Remove any previous output files (atl.out)
+	#    (b). Rename the binary file as vxWorks so that tftp can upload this file
+	print &quot;INFO: Started cleaning the output files...&quot;;
+	unlink($out);
+	unlink(&quot;$INTDIR/atl.out&quot;);
+	unlink(&quot;C:\\TXB_BUILD\\IAITESTAUTO\\taskstatus.txt&quot;);
+	#unlink(&quot;log.txt&quot;);
+	copy(&quot;$exe&quot;, &quot;$INTDIR\\vxWorks&quot;);
+	unlink($exe);
+	print &quot;INFO: Completed cleaning the output files...\n&quot;;
+
+	#2. Initiate the vxWorks transfer by performing soft reset to the target 
+	#   by performing the following:
+	#   (a). Get the following filetransfer details by reading dataForTDP.txt file:
+	#        vxWorks imagePath, 
+	#        IP address of both TargetBoard (hlcPC) and target connected silPC
+	#        Flag indicating dummy run or the actual test run
+	#        BuildType: Instrumented or Uninstrumented
+	#        ConfigPath:
+	#   (b). Call filetransfer.bat which will perform soft reset thereby initiating 
+	#        vxWorks image
+	
+	my $automatic = &quot;N&quot;;
+	my $autocheck_file = &quot;C:\\TXB_Build\\IAITESTAUTO\\checkAuto.txt&quot;;
+	my $pos       = 0;
+	my $line      = &quot;&quot;;
+	my $name      = &quot;&quot;;
+	my $val       = &quot;&quot;;
+
+	my $retfl = open(IN, &quot;&lt;$autocheck_file&quot;);
+	
+	if ($retfl) {
+	while (&lt;IN>) {
+		chomp;
+		$line = $_;
+		$pos = index($line, &quot;=&quot;);
+		if ($pos > 0) {
+			$name = substr($line,0, $pos);
+			$val  = substr($line, $pos + 1, length($line) - $pos);
+			if ($name eq &quot;AUTOMATIC&quot;)        { $automatic     = $val; }
+		}
+	}
+	close(IN);
+	}
+	else {
+		print &quot;>>ERR: Failed in opening $autocheck_file (Please check if INI file has AUTOMATIC set)\n&quot;;
+	}
+
+	# Check if automaic execution needed?
+	if ($automatic eq &quot;Y&quot;) {
+
+	
+	my $fout;
+	my $config_file=&quot;C:\\TXB_Build\\IAITESTAUTO\\dataForTDP.txt&quot;;
+
+	my $hlcIP     = &quot;172.20.19.225&quot;;
+	my $silpcIP   = &quot;172.20.19.15&quot;;
+	my $imagePath = &quot;C:\\TXB_CT\\PPCTXB\\vxWorks&quot;;
+	my $BldType   = &quot;I&quot;;
+	my $DummyFlg  = &quot;N&quot;;
+	my $cfgPath   = &quot;&quot;;
+
+
+	print &quot;INFO: Started reading executable parameters from $config_file ...\n&quot;;
+	my $ret = open(IN, &quot;&lt;$config_file&quot;);
+
+	if ($ret) {
+	while (&lt;IN>) {
+		chomp;
+		$line = $_;
+		$pos = index($line, &quot;=&quot;);
+		if ($pos > 0) {
+			$name = substr($line,0, $pos);
+			$val  = substr($line, $pos + 1, length($line) - $pos);
+			if ($name eq &quot;HLCIP&quot;)        { $hlcIP     = $val; }
+			elsif ($name eq &quot;SILPCIP&quot;)   { $silpcIP   = $val; }
+			elsif ($name eq &quot;IMAGEPATH&quot;) { $imagePath = $val; }
+			elsif ($name eq &quot;BUILDTYPE&quot;) { $BldType   = $val; }
+			elsif ($name eq &quot;DUMMYFLG&quot;)  { $DummyFlg  = $val; }
+			elsif ($name eq &quot;CFGPATH&quot;)   { $cfgPath   = $val; }
+		}
+	}
+	close(IN);
+	}
+	else {
+		print &quot;>>ERR: Failed in opening $config_file (Please check if copying of files from config area was successful)\n&quot;;
+	}
+		
+	print &quot;    INFO: Parameters for execution will be: \n &quot;;
+	print &quot;    INFO:    HLC IPAddress   : $hlcIP \n &quot;;
+	print &quot;    INFO:    SIL IPAddress   : $silpcIP \n &quot;;
+	print &quot;    INFO:    ImagePath       : $imagePath \n &quot;;
+	print &quot;    INFO:    BuildType       : $BldType \n &quot;;
+	print &quot;    INFO:    Dummy execution : $DummyFlg \n &quot;;
+	
+	print &quot;INFO: Completed reading executable parameters from $config_file \n &quot;;
+
+	#SystemP(&quot;C:\\TXB_Build\\IAITESTAUTO\\file_transfer.bat&quot;);
+	#SystemP(&quot;C:\\TXB_Build\\IAITESTAUTO\\IAITestKeyAutomator.exe 127.0.0.1 9877 30&quot;);
+	#SystemP(&quot;$Debugger -md -attach -t VxWorks6x_172.20.19.225 -ot KernelTask -m Task&quot;);
+
+
+	my $targetName = &quot;VxWorks6x_&quot;;
+	$targetName    = $targetName .  $hlcIP . &quot;_$BldType&quot;;
+	
+	#print &quot;$hlcIP-$silpcIP-$imagePath-$BldType-$DummyFlg\n &quot;;
+	#print &quot;targetName $targetName\n&quot;;
+	#print &quot;$DummyFlg\n&quot;;
+	#print &quot;Config_$BldType\n&quot;;
+	
+	print &quot;INFO: Started performing the execution for Dummy ($DummyFlg) : &quot;;
+	if ($DummyFlg eq &quot;Y&quot;) {
+		print &quot;YES (DUMMY)\n&quot;;
+		#print &quot;$hlcIP-$silpcIP-$imagePath-$BldType-$DummyFlg $targetName\n&quot;;
+		print &quot;    INFO:    Calling file_transfer.bat ( $silpcIP , $imagePath ) \n &quot;;
+		SystemP(&quot;C:\\TXB_Build\\IAITESTAUTO\\file_transfer.bat $silpcIP $imagePath&quot;);
+		
+		print &quot;    INFO:    Calling IAITestKeyAutomator.exe (127.0.0.1 , 9877 , 30 ) \n &quot;;
+		SystemP(&quot;C:\\TXB_Build\\IAITESTAUTO\\IAITestKeyAutomator.exe 127.0.0.1 9877 30&quot;);
+		
+		print &quot;    INFO:    Calling Debugger ( $targetName -ot KernelTask -m Task ) \n &quot;;
+		#SystemP(&quot;$Debugger -launchConfig -lc -n Config_$BldType -m run&quot;);
+		SystemP(&quot;$Debugger -launchConfig -lc -n $cfgPath -m run&quot;);
+		#SystemP(&quot;$Debugger -md -attach -t $targetName -ot KernelTask -m Task&quot;);
+		$DummyFlg = &quot;N&quot;;
+	}
+	else {
+		print &quot;NO (Actual Test)\n&quot;;
+		#print&quot;$hlcIP-$silpcIP-$imagePath-$BldType-$DummyFlg $targetName\n&quot;;
+		print &quot;    INFO:    Calling file_transfer.bat ( $silpcIP , $imagePath ) \n &quot;;
+		SystemP(&quot;C:\\TXB_Build\\IAITESTAUTO\\file_transfer.bat $silpcIP $imagePath&quot;);
+		
+		print &quot;    INFO:    Calling IAITestKeyAutomator.exe (127.0.0.1 , 9877 , 30 ) \n &quot;;
+		SystemP(&quot;C:\\TXB_Build\\IAITESTAUTO\\IAITestKeyAutomator.exe 127.0.0.1 9877 30&quot;);
+		
+		print &quot;    INFO:    Calling Debugger ( $targetName -ot KernelTask -m Task ) \n &quot;;
+		#SystemP(&quot;$Debugger -launchConfig -lc -n Config_$BldType -m run&quot;);
+		SystemP(&quot;$Debugger -launchConfig -lc -n $cfgPath -m run&quot;);
+		#SystemP(&quot;$Debugger -launchConfig -lc -n Config_$BldType -m run&quot;);
+		#SystemP(&quot;$Debugger -md -attach -t $targetName -ot KernelTask -m Task&quot;);
+	}
+	
+	print &quot;    INFO: Started checking for Debugger completion ... \n &quot;;
+	
+	# 3. Check if the debugger has completed by checking the execution status using batch
+	#    (Indirectly introducing syncronisation ...)
+	sleep 5; # Give a pause before we start checking...
+	my $stillRunning = &quot;Y&quot;;
+	my $taskstatusfile = &quot;C:\\TXB_Build\\IAITESTAUTO\\taskstatus.txt&quot;;
+	while ($stillRunning eq &quot;Y&quot;) {
+		$line  = &quot;&quot;;
+		$name  = &quot;&quot;;
+		$val   = &quot;&quot;;
+
+		print &quot;    INFO:    Started the cycle for checking whether tasks are complete ... \n &quot;;
+		SystemP(&quot;C:\\TXB_Build\\IAITESTAUTO\\check_studio.bat&quot;);
+		sleep 2; # Give a pause incase the script is getting called async
+		my $ret = open(IN, &quot;&lt;$taskstatusfile&quot;);
+		if ($ret) {
+			while (&lt;IN>) {
+				chomp;
+				$line = $_;
+				$pos = index($line, &quot;=&quot;);
+				if ($pos > 0) {
+					$name = substr($line, 0, $pos);
+					$val  = substr($line, $pos + 1, length($line) - $pos);
+					if ($name eq &quot;STUDIO&quot;) { $stillRunning = $val; }
+				}
+			}
+			close(IN);
+		}
+		print &quot;    INFO:    Completed the cycle of whether the tasks are complete \n &quot;;
+	}
+	
+	print &quot;INFO: Completed performing the execution \n &quot;;
+	
+	print &quot;INFO: Started collecting the results of the execution ... \n &quot;;
+	} # End of handling automatic execution
+	else { # To handle manual execution
+	   SystemP(&quot;$Debugger -md &quot;);
+	}
+	print &quot;    INFO: exe = $exe\n&quot;;
+	print &quot;    INFO: out = $out (this will be copy of $INTDIR/atl.out file \n&quot;;
+	copy(&quot;$INTDIR/atl.out&quot;, $out);
+	
+	# WHY IS THIS ???
+	return (open(&quot;atl.out&quot;, &quot;r&quot;));
+	#RenameFile(&quot;tmpatutraces.rio&quot;, $out) ;
+	
+	# THIS SECTION MIGHT NOT GET EXECUTED (CHECK ???)
+	open(IN, &quot;&lt;$out&quot;);
+
+	open(OU, &quot;>$out.tmp&quot;);
+	while(&lt;IN>) {
+		chomp;
+		$flag = 1 if(!/^0x/);
+		next if (!/^0x/);
+		next if ($flag == 0);
+		~s/^0x00//;
+		print OU chr hex($_) if($_ ne &quot;00&quot;);
+		$flag = 0 if ($_ eq &quot;00&quot;);
+	}
+	close(IN);
+	close(OU);
+	copy(&quot;$out.tmp&quot;, &quot;$out&quot;);
+	return(0);
+
+</VALUE>
+<TAIL>}</TAIL>
+</VALUEFCTPERL>
+</EXECUTE>
+<EXECUTEDBG Doc="EXECUTIONDEBUG" Label="Debug mode function" >
+<COMMENT/>
+<VALUEFCTPERL>
+<COMMENT/>
+<PROTO>sub atl_execdbg($$$)
+{
+	my ($exe,$out,$parameters) = @_;</PROTO>
+<VALUE>	my $Debugger=$Ini{'DEBUGGER'};
+	my $TargetName=$Ini{'TARGETNAME'};
+	my $newWin=&quot;$ENV{'COMSPEC'} /c start &quot;;
+	my $rtrtWtx=&quot;$TARGETDIR\\cmd\\rtrtWtx2.exe&quot;;
+	my $entry = $ATL_MAIN_PROCEDURE;
+	$entry=&quot;Tmain&quot; if ($entry eq '');
+
+	unlink($out);
+	open (OU,&quot;>TestRTd.cmd&quot;) || die(&quot;Cannot open file TestRTd.cmd for write\n&quot;);
+	print(OU &quot;target wtx $TargetName\n&quot;);
+	open (IN,&quot;&lt;rtrtobjlist.lst&quot;) || die(&quot;Cannot open file rtrtobjlist.lst\n&quot;);
+	while(&lt;IN>)
+	{
+		print(OU &quot;load $_\n&quot;);
+	}
+	close(IN);
+	print(OU &quot;b $entry\n&quot;);
+	print(OU &quot;r $entry\n&quot;);
+	close(OU);
+	my $ret=SystemP(&quot;$Debugger -command TestRTd.cmd&quot;);
+	unlink(&quot;TestRTd.cmd&quot;);
+	print(&quot;CAREFUL: No Report in Debug Mode ! \n&quot;);
+	exit(1);</VALUE>
+<TAIL>}
+1;</TAIL>
+</VALUEFCTPERL>
+</EXECUTEDBG>
+<NEWCMDFILE Name="link.RAM" >
+<COMMENT/>
+<VALUE>/* link.RAM - diab linker command file for VxWorks: RAM */
+
+/*
+ * Copyright (c) 2001-2007, 2012 Wind River Systems, Inc.
+ *
+ * The right to copy, distribute, modify or otherwise make use
+ * of this software may be licensed only pursuant to the terms
+ * of an applicable Wind River license agreement.
+ */
+
+/* This file was automatically generated using tool/common/ldscripts. */
+
+/*
+modification history
+--------------------
+01x,30apr12,mcm  CERT: Backporting the fix made for WIND00162782 to fix 
+                 WIND00324415.
+01w,16oct07,sn   WIND00107939:fixed LMAs of .sdata etc. for Diab
+01v,11jul07,pes  Update and rename generation of .kseg0data segment. (Renamed
+                 to .kseg0bss.) Add .rodata.cst16 segment.
+01u,07jul07,mcm  Fixing position of .tls* sections and adding support for tls
+                 for GCC.
+01t,08jun07,r_s  add support for Small Data Area segments.
+01s,09nov06,gvm  Support for .tls_data, .tls_vars, and associated absolute
+                 symbols in the Diab linker script
+01r,25aug05,dlk  Support .text.init, .text.fast, .data.init, .data.fast.
+01r,29jul05,slk  SPR 104264: fix MIPS romResident images
+01q,06may05,rlg  changes for MIPS specific devices
+01p,03jul04,f_b  Improved support for data alignment
+01o,12dec03,sn   added more .rodata.str1.* handlers
+01n,04dec03,sn   Diab: .rodata.* is not handled correctly by Diab linker; instead
+		 use specific names
+01m,28oct03,sn   Diab: collapse .rodata.cst* sections into .rodata
+01l,29may02,tpw  Diab: pad out sections, needed for MIPS byteswap. SPR 78076
+01k,24apr02,sn   GNU: SPR 75835 - added support for relocatable script link.OUT
+01j,19apr02,tpw  Diab: provide _etext for ColdFire. SPR 75122
+01i,06feb02,sn   Both: place .got2 to handle tramp.o (_x_gnu_tramp.o).
+01h,25jan02,tpw  GNU: give debug sections explicit 0 addresses.
+01g,14jan02,tpw  Diab: place .eh_frame data, in case of insistent GNU objects.
+01f,14dec01,tpw  Diab: provide both underscore options of wrs_kernel* here too.
+01e,05dec01,tpw  Both: Add .boot and .reset section support, for PPC 4xx series
+                 and Book E.
+01d,05dec01,tpw  Diab: Add .frame_info section to text region.
+01c,03dec01,jab  Diab: replaced LOAD() with AT()
+01b,14nov01,tpw  ALL: Correct some more bootrom/kernel issues.
+01b,06nov01,tpw  GNU: Add /DISCARD/ directive to discard uninteresting sections
+01a,01nov01,tpw  gnu script written
+01a,29oct01,jab  diab script written
+*/
+
+SECTIONS {
+  GROUP BIND(_VX_START_TEXT) : {
+    .text (TEXT) : {
+      wrs_kernel_text_start = .; _wrs_kernel_text_start = .;
+      *(.text)
+      wrs_kernel_text_fast = .; _wrs_kernel_text_fast = .;
+      *(.text.fast)
+      wrs_kernel_text_init = .; _wrs_kernel_text_init = .;
+      *(.text.init)
+      *(.rdata) *(.rodata) *(.rodata.cst16) *(.rodata.cst8) *(.rodata.cst4) *(.rodata.str1.1) *(.rodata.str1.2) *(.rodata.str1.4) *(.rodata.str1.8) *(.rodata.str1.16) *(.rodata.str1.32) *(.rodata.str1.64) *(.rodata.str1.128) *(.rodata.str1.256)
+      *(.init) *(.fini)
+      *(.frame_info)
+      . = ((. + 3) &amp; ~3);
+    }
+    .sdata2 (TEXT) : {
+      *(.sdata2)
+      . = ((. + 3) &amp; ~3);
+    }
+    . = ((. + 3) &amp; ~3);
+    etext = .; _etext = .;
+    wrs_kernel_text_end = .; _wrs_kernel_text_end = .;
+  }
+  GROUP BIND((etext + _VX_DATA_ALIGN - 1) &amp; -_VX_DATA_ALIGN) : {
+    .data (DATA) : {
+      wrs_kernel_data_start = .; _wrs_kernel_data_start = .;
+      *(.data)
+      wrs_kernel_data_fast = .; _wrs_kernel_data_fast = .;
+      *(.data.fast)
+      wrs_kernel_data_init = .; _wrs_kernel_data_init = .;
+      *(.data.init)
+      *(.eh_frame)	/* Some GNU objects insist on having .eh_frame data. */
+      *(.ctors)
+      *(.dtors)
+      *(.got2)
+      . = ((. + 3) &amp; ~3);
+    }
+    wrs_kernel_tls_data_start = .; _wrs_kernel_tls_data_start = .;
+    .tls_data (DATA) : {
+      *(.tls_data)
+    }
+    wrs_kernel_tls_data_size = . - wrs_kernel_tls_data_start; _wrs_kernel_tls_data_size = . - _wrs_kernel_tls_data_start;
+    wrs_kernel_tls_data_align = ALIGNOF(.tls_data); _wrs_kernel_tls_data_align = ALIGNOF(.tls_data);
+    wrs_kernel_tls_vars_start = .; _wrs_kernel_tls_vars_start = .;
+    .tls_vars (DATA) : {
+      *(.tls_vars)
+    }
+    wrs_kernel_tls_vars_size = RAWSIZEOF(.tls_vars); _wrs_kernel_tls_vars_size = RAWSIZEOF(.tls_vars);
+    . = ((. + 3) &amp; ~3);
+    /* set gp for MIPS startup code */
+    _gp = ((. + 15) &amp; ~15) + 0x7ff0;
+    .sdata (DATA)  : {
+      *(.sdata)
+      . = ((. + 3) &amp; ~3);
+    }
+    . = ((. + 3) &amp; ~3);
+    edata = .; _edata = .;
+    wrs_kernel_data_end = .; _wrs_kernel_data_end = .;
+    .sbss (BSS) : {
+      wrs_kernel_bss_start = .; _wrs_kernel_bss_start = .;
+      *(.sbss)
+      . = ((. + 3) &amp; ~3);
+    }
+    .bss (BSS) : {
+      *(.bss)
+      . = ((. + 3) &amp; ~3);
+    }
+    . = ((. + 3) &amp; ~3);
+    end = .; _end = .;
+    wrs_kernel_bss_end = .; _wrs_kernel_bss_end = .;
+  }
+}</VALUE>
+</NEWCMDFILE>
+</BUILD>
+<LIBCONF Doc="LIBCONFC" Label="Library Settings" >
+<COMMENT/>
+<LIBCONFC>
+<FREE_TEXT_BEFORE_FOR_INSTR Doc="FREETEXTBEFOREINSTR" Label="Include files visible to all generated files" >
+<COMMENT/>
+<VALUE>/* Insert any includes */
+/*#include &lt;time.h>
+#ifndef RTRT_ENTRY
+#define RTRT_ENTRY Tmain
+#endif*/
+</VALUE>
+</FREE_TEXT_BEFORE_FOR_INSTR>
+<FREE_TEXT_BEFORE_FOR_TDP Doc="FREETEXTBEFORETDP" Label="Include files or code visible only to the Target Deployment Port" >
+<COMMENT/>
+<VALUE>/* Insert Here any includes free func or macros */
+#include &lt;stdio.h>
+#include &lt;timers.h>
+#include &lt;string.h>
+#include &lt;vxWorks.h>
+#include &lt;envLib.h>
+#include &lt;semLib.h>
+#include &lt;taskLib.h>
+#include &lt;taskHookLib.h>
+#include &lt;taskVarLib.h>
+#include &lt;sysLib.h>
+#include &lt;sockLib.h>
+#include &lt;ioLib.h>
+#include &lt;wdb/wdbLib.h>
+#include &lt;logLib.h>
+
+/*
+#ifndef STR_ENTRY
+#define STR_ENTRY &quot;Tmain&quot;
+#endif
+*/
+#ifndef EXITTASKNAME
+#define EXITTASKNAME usrAtExitTaskName
+#define ENTRYTASKNAME STR_ENTRY
+#else
+#define ENTRYTASKNAME EXITTASKNAME
+#endif
+FILE * fp ;
+SEM_ID mySemID=NULL;
+int rtrtFileNumber=0;
+extern unsigned char atl_initialized;
+char *usrAtExitTaskName;
+void (*usrAtExitHandler)(void);
+/*
+void usrAtExit(WIND_TCB *p)
+{
+        if ((strcmp(EXITTASKNAME,p->objCore.name)==0) ||
+           (strcmp(ENTRYTASKNAME,p->objCore.name)==0))
+        {
+                printf (&quot;\n%s exit\n&quot;, p->objCore.name);
+                (*usrAtExitHandler)();
+                taskDeleteHookDelete((FUNCPTR)usrAtExit);
+        }
+}
+
+void usr_clock_diff(struct timespec *r,struct timespec *a,struct timespec *b)
+{
+	r->tv_sec=a->tv_sec-b->tv_sec;
+	if(a->tv_nsec &lt; b->tv_nsec)
+	{
+		r->tv_sec--;
+		r->tv_nsec=1000000000L+a->tv_nsec-b->tv_nsec;
+	}
+	else r->tv_nsec=a->tv_nsec-b->tv_nsec;
+}
+*/
+#ifdef USE_ATU
+char * atu_traces_file()
+{
+	return(&quot;tmpatutraces.rio&quot;);
+}
+#endif
+</VALUE>
+</FREE_TEXT_BEFORE_FOR_TDP>
+<FREE_TEXT_BEFORE_FOR_INSTR_AND_GEN Doc="FREETEXTBEFOREINSTRANDGEN" Label="Include files visible to all generated and instrumented files" >
+<COMMENT/>
+<VALUE>/* Insert Here any includes free functions or macros */
+</VALUE>
+</FREE_TEXT_BEFORE_FOR_INSTR_AND_GEN>
+<COMPILER_SPECIFICS Doc="COMPILERSPECIFICS" Label="Target compiler specifics" >
+<COMMENT/>
+<PREPROCESSING_SPECIFICS Doc="PREPROCESSINGSPECIFICS" Label="Preprocessor specifics" >
+<COMMENT/>
+<ITEM>
+<TEXT_MACRO Doc="CONCATMACRO" Name="RTRT_CONCAT_MACRO(a,b)" Label="Macro concatenation" >
+<COMMENT/>
+<VALUE>a##b</VALUE>
+</TEXT_MACRO>
+</ITEM>
+<ITEM>
+<BINARY_MACRO Doc="PREPROERRORSUPPORTED" Name="RTRT_PREPRO_ERROR_SUPPORTED" Value="1" Label="#error supported" >
+<COMMENT/>
+</BINARY_MACRO>
+</ITEM>
+</PREPROCESSING_SPECIFICS>
+<LINKAGE Doc="LINKAGE" Label="Linkage directives" >
+<COMMENT/>
+<ITEM>
+<TEXT_MACRO Doc="GLOBALVAR" Name="RTRT_GLOBALVAR" Label="Global Variables" >
+<COMMENT/>
+<VALUE/>
+</TEXT_MACRO>
+</ITEM>
+<ITEM>
+<TEXT_MACRO Doc="STATICVAR" Name="RTRT_STATICVAR" Label="File Static Variables" >
+<COMMENT/>
+<VALUE>static</VALUE>
+</TEXT_MACRO>
+</ITEM>
+<ITEM>
+<TEXT_MACRO Doc="GLOBALFCT" Name="RTRT_GLOBALFCT" Label="Global Functions" >
+<COMMENT/>
+<VALUE/>
+</TEXT_MACRO>
+</ITEM>
+<ITEM>
+<TEXT_MACRO Doc="STATICFCT" Name="RTRT_STATICFCT" Label="File Static Functions" >
+<COMMENT/>
+<VALUE>static</VALUE>
+</TEXT_MACRO>
+</ITEM>
+<ITEM>
+<BINARY_MACRO Doc="KR" Name="RTRT_KR" Value="0" Label="KR mode" >
+<COMMENT/>
+</BINARY_MACRO>
+</ITEM>
+<ITEM>
+<TEXT_MACRO Doc="EXTERN" Name="RTRT_EXTERN" Label="Extern Directive" >
+<COMMENT/>
+<VALUE>extern</VALUE>
+</TEXT_MACRO>
+</ITEM>
+<ITEM>
+<TEXT_MACRO Doc="EXTERNC" Name="RTRT_EXTERN_C" Label="Extern C Directive" >
+<COMMENT/>
+<VALUE>extern &quot;C&quot;</VALUE>
+</TEXT_MACRO>
+</ITEM>
+<ITEM>
+<TEXT_MACRO Doc="DLLIMPORT" Name="RTRT_DLL_IMPORT" Label="dll Import Directive" >
+<COMMENT/>
+<VALUE/>
+</TEXT_MACRO>
+</ITEM>
+<ITEM>
+<TEXT_MACRO Doc="DLLEXPORT" Name="RTRT_DLL_EXPORT" Label="dll Export Directive" >
+<COMMENT/>
+<VALUE/>
+</TEXT_MACRO>
+</ITEM>
+<ITEM>
+<TEXT_MACRO Doc="FAMILYINITVALUE" Name="RTRT_FAMILY_INIT_VALUE" Label="Family Initialization Value Directive" >
+<COMMENT/>
+<VALUE>&amp;_fini</VALUE>
+</TEXT_MACRO>
+</ITEM>
+<ITEM>
+<TEXT_MACRO Doc="FAMILYTYPE" Name="RTRT_FAMILY_TYPE" Label="Family Type Directive" >
+<COMMENT/>
+<VALUE>void *</VALUE>
+</TEXT_MACRO>
+</ITEM>
+</LINKAGE>
+<CPP_SPECIFICS Doc="CPLUSPLUSSPECIFICS" Label="C++ specific options" >
+<COMMENT/>
+<ITEM>
+<BINARY_MACRO Doc="STATICININLINE" Name="RTRT_STATIC_IN_INLINE_ALLOWED" Value="0" Label="static var in inlines allowed" >
+<COMMENT/>
+</BINARY_MACRO>
+</ITEM>
+<ITEM>
+<TEXT_MACRO Doc="DEFAULTDTORVIRTUAL" Name="RTRT_DEFAULT_DTOR_VIRTUAL_KEYWORD" Label="Added Destructors types" >
+<COMMENT/>
+<VALUE>virtual</VALUE>
+</TEXT_MACRO>
+</ITEM>
+<ITEM>
+<BINARY_MACRO Doc="BOOLDEFINED" Name="RTRT_BOOL_DEFINED" Value="1" Label="bool type predefined" >
+<COMMENT/>
+</BINARY_MACRO>
+</ITEM>
+<ITEM>
+<BINARY_MACRO Doc="EXCEPTIONS" Name="RTRT_EXCEPTIONS" Value="1" Label="Exceptions supported" >
+<COMMENT/>
+</BINARY_MACRO>
+</ITEM>
+<ITEM>
+<BINARY_MACRO Doc="RTTISUPPORTED" Name="RTRT_RTTI_SUPPORTED" Value="1" Label="RTTI supported" >
+<COMMENT/>
+</BINARY_MACRO>
+</ITEM>
+<ITEM>
+<BINARY_MACRO Doc="STATICANDEXTERNCFORBIDDEN" Name="RTRT_STATIC_AND_EXTERN_C_FORBIDDEN" Value="1" Label="NotUsed" >
+<COMMENT/>
+</BINARY_MACRO>
+</ITEM>
+<ITEM>
+<BINARY_MACRO Doc="STATICINSTATICINLINE" Name="RTRT_STATIC_IN_STATIC_INLINE_ALLOWED" Value="1" Label="NotUsed" >
+<COMMENT/>
+</BINARY_MACRO>
+</ITEM>
+</CPP_SPECIFICS>
+<DATA_TYPES Doc="DATATYPES" Label="Data types" >
+<COMMENT/>
+<ITEM>
+<TEXT_MACRO Doc="INT8" Name="RTRT_INT8" Label="8-bits integer" >
+<COMMENT/>
+<VALUE>char</VALUE>
+</TEXT_MACRO>
+</ITEM>
+<ITEM>
+<TEXT_MACRO Doc="UINT8" Name="RTRT_U_INT8" Label="8-bits unsigned integer" >
+<COMMENT/>
+<VALUE>unsigned char</VALUE>
+</TEXT_MACRO>
+</ITEM>
+<ITEM>
+<TEXT_MACRO Doc="INT16" Name="RTRT_INT16" Label="16-bits integer" >
+<COMMENT/>
+<VALUE>short</VALUE>
+</TEXT_MACRO>
+</ITEM>
+<ITEM>
+<TEXT_MACRO Doc="UINT16" Name="RTRT_U_INT16" Label="16-bits unsigned integer" >
+<COMMENT/>
+<VALUE>unsigned short</VALUE>
+</TEXT_MACRO>
+</ITEM>
+<ITEM>
+<TEXT_MACRO Doc="INT32" Name="RTRT_INT32" Label="32-bits integer" >
+<COMMENT/>
+<VALUE>long</VALUE>
+</TEXT_MACRO>
+</ITEM>
+<ITEM>
+<TEXT_MACRO Doc="UINT32" Name="RTRT_U_INT32" Label="32-bits unsigned integer" >
+<COMMENT/>
+<VALUE>unsigned long</VALUE>
+</TEXT_MACRO>
+</ITEM>
+<ITEM>
+<TEXT_MACRO Doc="SIZET" Name="RTRT_SIZE_T" Label="size_t type" >
+<COMMENT/>
+<VALUE>unsigned int</VALUE>
+</TEXT_MACRO>
+</ITEM>
+<ITEM>
+<OPTIONAL_MACRO Doc="INT64" Defined="0" Name="RTRT_INT64" Value="long long" Label="64-bits integer" >
+<COMMENT/>
+</OPTIONAL_MACRO>
+</ITEM>
+<ITEM>
+<OPTIONAL_MACRO Doc="UINT64" Defined="0" Name="RTRT_U_INT64" Value="unsigned long long" Label="64-bits unsigned integer" >
+<COMMENT/>
+</OPTIONAL_MACRO>
+</ITEM>
+<ITEM>
+<TEXT_MACRO Doc="PTR2INT" Name="RTRT_PTR_TO_INT(p)" Label="pointer to integer conversion" >
+<COMMENT/>
+<VALUE>((RTRT_U_INT32)p)</VALUE>
+</TEXT_MACRO>
+</ITEM>
+<ITEM>
+<BINARY_MACRO Doc="PTRALIGNMENT" Name="RTRT_CARE_ABOUT_PTR_ALIGNMENT" Value="0" Label="take care about alignment when memory checking" >
+<COMMENT/>
+</BINARY_MACRO>
+</ITEM>
+</DATA_TYPES>
+</COMPILER_SPECIFICS>
+<APPLICATION_SPECIFICS Doc="APPLICATION" Label="Environmental constraints" >
+<COMMENT/>
+<SPRINTF Doc="SPRINTFTITLE" Label="sprintf function availability" >
+<COMMENT/>
+<ITEM>
+<BINARY_MACRO Doc="SPRINTF" Name="RTRT_SPRINTF" Value="1" Label="sprintf available" >
+<COMMENT/>
+</BINARY_MACRO>
+</ITEM>
+</SPRINTF>
+<EXIT Doc="EXITTITLE" Label="exit function availability" >
+<COMMENT/>
+<CHOICE Name="RTRT_EXIT" Value="RTRT_STD" >
+<COMMENT/>
+<CHOICEDATA Sensitive="0" >RTRT_NONE</CHOICEDATA>
+<CHOICEDATA Sensitive="0" >RTRT_STD</CHOICEDATA>
+<CHOICEDATA Sensitive="1" >RTRT_USR</CHOICEDATA>
+<ONGLET Doc="EXIT" Label="usr_exit" >
+<VALUEFCTC>
+<COMMENT/>
+<PROTO>void usr_exit(RTRT_INT32 x)
+{</PROTO>
+<VALUE>	/* Code here your own exit function, returning x */
+	
+
+	short i ;
+short t ;
+               printf(&quot;TestRealTime_EXIT\n&quot;);
+	
+i=20;
+	
+t=10*sysClkRateGet()/1000;
+	while ((wdbUserEvtPost(&quot;RTRTENDS&quot;)!=OK) &amp;&amp; i--)
+	{
+		printf(&quot;Can't raise event RTRTENDS\n&quot;);
+		taskDelay(t); 	/* Waiting for 10 milliseconds */
+	}
+/*	taskDelay(t); */
+	taskDelete(taskIdSelf()); </VALUE>
+<TAIL>}</TAIL>
+</VALUEFCTC>
+</ONGLET>
+</CHOICE>
+</EXIT>
+<DATE Doc="DATETITLE" Label="date function availability" >
+<COMMENT/>
+<CHOICE Name="RTRT_GET_DATE" Value="RTRT_NONE" >
+<COMMENT/>
+<CHOICEDATA Sensitive="0" >RTRT_NONE</CHOICEDATA>
+<CHOICEDATA Sensitive="1" >RTRT_USR</CHOICEDATA>
+<ONGLET Doc="EXIT" Label="usr_date" >
+<VALUEFCTC>
+<COMMENT/>
+<PROTO>char *usr_date()
+{</PROTO>
+<VALUE>	/* Code here your own get date function */
+	return ((char *)0);</VALUE>
+<TAIL>}</TAIL>
+</VALUEFCTC>
+</ONGLET>
+</CHOICE>
+</DATE>
+<SYSTEM_TESTING Doc="SYSTEMTESTING" Label="For System Testing" >
+<COMMENT/>
+<DYNTRACK Doc="DYNAMICTRACKINGTITLE" Label="Dynamic tracking availability" >
+<COMMENT/>
+<ITEM>
+<BINARY_MACRO Doc="DYNAMICTRACKING" Name="RTRT_DYNAMIC_TRACKING" Value="0" Label="VirtualTester-Agent Link Available" >
+<COMMENT/>
+</BINARY_MACRO>
+</ITEM>
+</DYNTRACK>
+<MEMCPY Doc="MEMCPYTITLE" Label="memcpy function availability" >
+<COMMENT/>
+<CHOICE Name="RTRT_MEMCPY" Value="RTRT_STD" >
+<COMMENT/>
+<CHOICEDATA Sensitive="0" >RTRT_NONE</CHOICEDATA>
+<CHOICEDATA Sensitive="0" >RTRT_STD</CHOICEDATA>
+<CHOICEDATA Sensitive="1" >RTRT_USR</CHOICEDATA>
+<ONGLET Doc="MEMCPY" Label="usr_memcpy" >
+<VALUEFCTC>
+<COMMENT/>
+<PROTO>void *usr_memcpy(void *dest,const void *src,RTRT_SIZE_T s)
+{</PROTO>
+<VALUE>	int  i;
+
+	/* Code here your memcpy function */
+	i=0;
+	for(i=0;i&lt;s;i++) ((char *)(dest))[i]=((char *)(src))[i];
+        return dest;</VALUE>
+<TAIL>}</TAIL>
+</VALUEFCTC>
+</ONGLET>
+</CHOICE>
+</MEMCPY>
+<GETHOSTNAME Doc="GETHOSTNAMETITLE" Label="gethostname function availability" >
+<COMMENT/>
+<CHOICE Name="RTRT_GETHOSTNAME" Value="RTRT_NONE" >
+<COMMENT/>
+<CHOICEDATA Sensitive="0" >RTRT_NONE</CHOICEDATA>
+<CHOICEDATA Sensitive="0" >RTRT_STD</CHOICEDATA>
+<CHOICEDATA Sensitive="1" >RTRT_USR</CHOICEDATA>
+<ONGLET Doc="GETHOSTNAME" Label="usr_gethostname" >
+<VALUEFCTC>
+<COMMENT/>
+<PROTO>void *usr_gethostname(char *p)
+{</PROTO>
+<VALUE>	/* Code here your gethostname function */
+	/* The p parameter is a 50-bytes long allocated pointer */
+	strcpy(p,&quot;VxTarget&quot;);
+	return(0);</VALUE>
+<TAIL>}</TAIL>
+</VALUEFCTC>
+</ONGLET>
+</CHOICE>
+</GETHOSTNAME>
+<RDV Doc="RDVTITLE" Label="RENDEZVOUS function availability" >
+<COMMENT/>
+<CHOICE Name="RTRT_RDV" Value="RTRT_NONE" >
+<COMMENT/>
+<CHOICEDATA Sensitive="0" >RTRT_NONE</CHOICEDATA>
+<CHOICEDATA Sensitive="0" >RTRT_STD</CHOICEDATA>
+<CHOICEDATA Sensitive="1" >RTRT_USR</CHOICEDATA>
+<ONGLET Doc="RDV" Label="usr_rdv" >
+<VALUEFCTC>
+<COMMENT/>
+<PROTO>int usr_rdv(char *p)
+{</PROTO>
+<VALUE>	/* Code here your rendez-vous function */
+	/* The p parameter contains the name of the rendez-vous */
+	/* THis function should block until all the members are at the same point */</VALUE>
+<TAIL>}</TAIL>
+</VALUEFCTC>
+</ONGLET>
+</CHOICE>
+</RDV>
+</SYSTEM_TESTING>
+<OBSERVATIONS Doc="OBSERVATIONS" Label="For runtime analysis features" >
+<COMMENT/>
+<INITSUPPORTED Doc="VARIABLEINITSUPPORTEDTITLE" Label="Initialized variable support and checks" >
+<COMMENT/>
+<ITEM>
+<BINARY_MACRO Doc="VARIABLEINITSUPPORTED" Name="RTRT_VARIABLE_INIT_SUPPORTED" Value="1" Label="Initialized Global Variables Supported" >
+<COMMENT/>
+</BINARY_MACRO>
+</ITEM>
+<ITEM>
+<BINARY_MACRO Doc="CHECKCALLSTACK" Name="RTRT_CHECK_STACK" Value="0" Label="check call stack variables" >
+<COMMENT/>
+</BINARY_MACRO>
+</ITEM>
+<ITEM>
+<BINARY_MACRO Doc="RAMSETRANDOMLY" Name="RTRT_RAM_SET_RANDOMLY" Value="0" Label="Ram Set Randomly" >
+<COMMENT/>
+</BINARY_MACRO>
+</ITEM>
+</INITSUPPORTED>
+<ATEXIT Doc="ATEXITTITLE" Label="atexit function availability" >
+<COMMENT>User Defined At-Exit, based on a hook set when tasks are deleted.
+The usrAtExit functions is located in the section 'Include files or Code...' at the beginning of the Lib Settings</COMMENT>
+<CHOICE Name="RTRT_ATEXIT" Value="RTRT_STD" >
+<COMMENT/>
+<CHOICEDATA Sensitive="0" >RTRT_NONE</CHOICEDATA>
+<CHOICEDATA Sensitive="0" >RTRT_STD</CHOICEDATA>
+<CHOICEDATA Sensitive="1" >RTRT_USR</CHOICEDATA>
+<ONGLET Doc="ATEXIT" Label="usr_atexit" >
+<VALUEFCTC>
+<COMMENT/>
+<PROTO>int usr_atexit(void (handler)(void))
+{</PROTO>
+<VALUE>	/* Code here your atexit function */
+	/* The p parameter contains the name of a function that should be */
+	/* called at normal program termination */
+	usrAtExitHandler=handler;
+	usrAtExitTaskName=taskName(taskIdSelf());
+	taskDeleteHookAdd((FUNCPTR)usrAtExit);
+	return(1);</VALUE>
+<TAIL>}</TAIL>
+</VALUEFCTC>
+</ONGLET>
+</CHOICE>
+</ATEXIT>
+<GETENV Doc="GETENVTITLE" Label="getenv function availability" >
+<COMMENT/>
+<CHOICE Name="RTRT_GETENV" Value="RTRT_STD" >
+<COMMENT/>
+<CHOICEDATA Sensitive="0" >RTRT_NONE</CHOICEDATA>
+<CHOICEDATA Sensitive="0" >RTRT_STD</CHOICEDATA>
+<CHOICEDATA Sensitive="1" >RTRT_USR</CHOICEDATA>
+<ONGLET Doc="GETENV" Label="usr_getenv" >
+<VALUEFCTC>
+<COMMENT/>
+<PROTO>char *usr_getenv(char *s)
+{</PROTO>
+<VALUE>	/* Code here your getenv function */
+	/* The s parameter contains the name of the environment variable */
+	/* that should be retrieved from the environment */</VALUE>
+<TAIL>}</TAIL>
+</VALUEFCTC>
+</ONGLET>
+</CHOICE>
+</GETENV>
+<GETPID Doc="GETPIDTITLE" Label="getpid function availability" >
+<COMMENT/>
+<CHOICE Name="RTRT_GETPID" Value="RTRT_NONE" >
+<COMMENT/>
+<CHOICEDATA Sensitive="0" >RTRT_NONE</CHOICEDATA>
+<CHOICEDATA Sensitive="0" >RTRT_STD</CHOICEDATA>
+<CHOICEDATA Sensitive="1" >RTRT_USR</CHOICEDATA>
+<ONGLET Doc="GETPID" Label="usr_getpid" >
+<VALUEFCTC>
+<COMMENT/>
+<PROTO>int usr_getpid()
+{</PROTO>
+<VALUE>	/* Code here your getpid function */
+	 return(0);</VALUE>
+<TAIL>}</TAIL>
+</VALUEFCTC>
+</ONGLET>
+</CHOICE>
+</GETPID>
+<SIGNAL Doc="SIGNALTITLE" Label="signal function availability" >
+<COMMENT/>
+<CHOICE Name="RTRT_SIGNAL" Value="RTRT_NONE" >
+<COMMENT/>
+<CHOICEDATA Sensitive="0" >RTRT_NONE</CHOICEDATA>
+<CHOICEDATA Sensitive="0" >RTRT_STD</CHOICEDATA>
+<CHOICEDATA Sensitive="1" >RTRT_USR</CHOICEDATA>
+<ONGLET Doc="SIGNAL" Label="Settings" >
+<ITEM>
+<TEXT_MACRO Doc="POSTSIG" Name="RTRT_POST_SIG" Label="Post Sig" >
+<COMMENT/>
+<VALUE/>
+</TEXT_MACRO>
+</ITEM>
+</ONGLET>
+<ONGLET Doc="SIGNAL" Label="usr_signal" >
+<VALUEFCTC>
+<COMMENT/>
+<PROTO>void usr_signal(int sig,void (handler)(int))
+{</PROTO>
+<VALUE>	/* Code here your signal function */
+	/* The sig parameter contains the signal number to be registered */
+	/* The f parameter is a function pointer to the handler */</VALUE>
+<TAIL>}</TAIL>
+</VALUEFCTC>
+</ONGLET>
+</CHOICE>
+</SIGNAL>
+<LONGJMP Doc="LONGJMP" Label="longjmp availability and tracking" >
+<COMMENT/>
+<CHOICE Name="RTRT_LONGJMP" Value="RTRT_NONE" >
+<COMMENT/>
+<CHOICEDATA Sensitive="0" >RTRT_NONE</CHOICEDATA>
+<CHOICEDATA Sensitive="1" >RTRT_USR</CHOICEDATA>
+<ONGLET Doc="LONGJMP" Label="longjmp functions" >
+<VALUEFCTC>
+<COMMENT/>
+<PROTO>void _atl_stack_jump(void *,short);
+#define STACK_GOING_UP 0
+#define STACK_GOING_DOWN 1</PROTO>
+<VALUE>#include &lt;setjmp.h>
+void RTRT_longjmp(jmp_buf env,int val)
+{
+	/* Call the actual longjmp function */
+	/* after having called _atl_stack_jump ( [Stack Pointer Register Address], [STACK_GOING_UP|STACK_GOING_DOWN] );  */
+	_atl_stack_jump(env[0],STACK_GOING_UP);
+	longjmp(env,val);
+}
+void RTRT__longjmp(jmp_buf env,int val)
+{
+	/* Call the actual longjmp function */
+	/* after having called _atl_stack_jump ( [Stack Pointer Register Address], [STACK_GOING_UP|STACK_GOING_DOWN] );  */
+	_atl_stack_jump(env[0],STACK_GOING_UP);
+	_longjmp(env,val);
+}</VALUE>
+<TAIL/>
+</VALUEFCTC>
+</ONGLET>
+<ONGLET Doc="LONGJMP" Label="Macro Redefinition" >
+<VALUEFCTH>
+<COMMENT/>
+<PROTO/>
+<VALUE>#define longjmp RTRT_longjmp
+#define _longjmp RTRT__longjmp</VALUE>
+<TAIL/>
+</VALUEFCTH>
+</ONGLET>
+</CHOICE>
+</LONGJMP>
+</OBSERVATIONS>
+</APPLICATION_SPECIFICS>
+<TESTING_SPECIFICS Doc="TESTINGSPECIFICS" Label="For testing features" >
+<COMMENT/>
+<MAIN_RETURN Doc="MAINRETURNHEADER" Label="Test program entry point prototype and termination instruction" >
+<COMMENT/>
+<ITEM>
+<TEXT_MACRO Doc="MAINHEADER" Name="RTRT_MAIN_HEADER" Label="main prototype" >
+<COMMENT/>
+<VALUE>int Tmain(int argc,char *argv[]) {</VALUE>
+</TEXT_MACRO>
+</ITEM>
+<ITEM>
+<TEXT_MACRO Doc="MAINRETURN" Name="RTRT_MAIN_RETURN" Label="main return" >
+<COMMENT/>
+<VALUE>return(0);</VALUE>
+</TEXT_MACRO>
+</ITEM>
+</MAIN_RETURN>
+<STRING_SUPPORT Doc="STRINGSUPPORT" Label="String support" >
+<COMMENT/>
+<ITEM>
+<BINARY_MACRO Doc="STRING" Name="RTRT_STRING" Value="1" Label="Tests on strings needed" >
+<COMMENT/>
+</BINARY_MACRO>
+</ITEM>
+</STRING_SUPPORT>
+<FLOAT_SUPPORT Doc="FLOATSUPPORT" Label="Floating point number support" >
+<COMMENT/>
+<ITEM>
+<BINARY_MACRO Doc="FLOAT" Name="RTRT_FLOAT" Value="1" Label="Tests on floting point needed" >
+<COMMENT/>
+</BINARY_MACRO>
+</ITEM>
+<ITEM>
+<OPTIONAL_MACRO Defined="1" Doc="LONGDOUBLE" Name="RTRT_LONG_DOUBLE" Value="0" Label="long double" >
+<COMMENT>No support of Long Doubles, even in C++. If set to 1, an undefined external _Q_qtod appears.</COMMENT>
+</OPTIONAL_MACRO>
+</ITEM>
+<ITEM>
+<BINARY_MACRO Doc="FLOATDUMP" Name="RTRT_FLOAT_DUMP" Value="0" Label="Dump float in hexadecimal" >
+<COMMENT/>
+</BINARY_MACRO>
+</ITEM>
+<ITEM>
+<TEXT_MACRO Doc="NBDIGITSFLT" Name="RTRT_NBDIGITS_FLT" Label="Number of digits for float" >
+<COMMENT/>
+<VALUE>6</VALUE>
+</TEXT_MACRO>
+</ITEM>
+<ITEM>
+<TEXT_MACRO Doc="NBDIGITSDBL" Name="RTRT_NBDIGITS_DBL" Label="Number of digits for double" >
+<COMMENT/>
+<VALUE>15</VALUE>
+</TEXT_MACRO>
+</ITEM>
+<ITEM>
+<TEXT_MACRO Doc="NBDIGITSLDBL" Name="RTRT_NBDIGITS_LDBL" Label="Number of digits for long double" >
+<COMMENT/>
+<VALUE>15</VALUE>
+</TEXT_MACRO>
+</ITEM>
+</FLOAT_SUPPORT>
+</TESTING_SPECIFICS>
+<IO Doc="DATARETRIEVALTITLE" Label="Data retrieval and Error message output" >
+<COMMENT>File type is int, open and append return 1, close is empty and writeln calls printf
+Line Split Market is defined and set to ^</COMMENT>
+<SETTINGS_IO Doc="SETTINGSIOTITLE" Label="IO Settings" >
+<COMMENT/>
+<ITEM>
+<TEXT_MACRO Doc="OBSTOOLSFINISHED" Name="ATL_OBSTOOLS_FINISHED" Label="Obstools Finished" >
+<COMMENT/>
+<VALUE/>
+</TEXT_MACRO>
+</ITEM>
+<ITEM>
+<OPTIONAL_MACRO Doc="BUFFERSIZE" Defined="0" Name="RTRT_BUFFER_SIZE" Value="1024" Label="Buffer Size" >
+<COMMENT/>
+</OPTIONAL_MACRO>
+</ITEM>
+</SETTINGS_IO>
+<GENERAL_IO Doc="IOTITLE" Label="Data retrieval" >
+<COMMENT/>
+<CHOICE Name="RTRT_IO" Value="RTRT_USR" >
+<COMMENT/>
+<CHOICEDATA Sensitive="0" >RTRT_NONE</CHOICEDATA>
+<CHOICEDATA Sensitive="0" >RTRT_STD</CHOICEDATA>
+<CHOICEDATA Sensitive="1" >RTRT_USR</CHOICEDATA>
+<ONGLET Doc="IO" Label="Settings" >
+<ITEM>
+<TEXT_MACRO Doc="IO" Name="RTRT_FILE_TYPE" Label="File type" >
+<COMMENT/>
+<VALUE>FILE *</VALUE>
+</TEXT_MACRO>
+</ITEM>
+<ITEM>
+<OPTIONAL_MACRO Doc="LINESPLITMARKER" Defined="0" Name="RTRT_LINE_SPLIT_MARKER_BEGIN" Value="&quot;^&quot;" Label="Dump Separator begin" >
+<COMMENT/>
+</OPTIONAL_MACRO>
+</ITEM>
+<ITEM>
+<OPTIONAL_MACRO Doc="LINESPLITMARKER" Defined="0" Name="RTRT_LINE_SPLIT_MARKER_END" Value="&quot;^&quot;" Label="Dump Separator end" >
+<COMMENT/>
+</OPTIONAL_MACRO>
+</ITEM>
+</ONGLET>
+<ONGLET Doc="IO" Label="usr_init" >
+<VALUEFCTC>
+<COMMENT/>
+<PROTO>RTRT_FILE_TYPE usr_init(char *fileName)
+{</PROTO>
+<VALUE>	/* Code here the open function */
+	/* The fileName parameter contains the name of the file */
+	/* to be opened on the host */
+
+int i=0;
+	char *evt = (char *)malloc(17+strlen(fileName));
+	rtrtFileNumber++;
+atl_initialized = 0;
+/*printf(&quot;%s\n&quot;,fileName);*/
+	sprintf(evt, &quot;RTRTOPENF_%5d_%s&quot;, rtrtFileNumber, fileName);
+
+	while ((wdbUserEvtPost(evt)!=OK) &amp;&amp; (i&lt;20))
+	{
+		i++;
+		printf(&quot;Can't raise event RTRTOPENF %d\n&quot;, i);
+		taskDelay(10*sysClkRateGet()/1000);	
+	}
+	
+	free(evt);
+	return(rtrtFileNumber); /**/</VALUE>
+<TAIL>}</TAIL>
+</VALUEFCTC>
+</ONGLET>
+<ONGLET Doc="IO" Label="usr_open" >
+<VALUEFCTC>
+<COMMENT/>
+<PROTO>RTRT_FILE_TYPE usr_open(char *fileName)
+{</PROTO>
+<VALUE>/* Code here the open function */
+	/* The fileName parameter contains the name of the file */
+	/* to be opened on the host */
+	/* return((FILE *) fopen(&quot;C:\\RTRT_PRJ\\\add\\atl.out&quot;,&quot;w&quot;));*/
+/*return((FILE *) fopen(filename,&quot;w&quot;));*/
+
+/*printf(&quot;...Opening file...\n&quot;);
+printf(&quot;...Opening file...%s \n&quot;,fileName);
+return(fopen(fileName,&quot;w&quot;));*/
+/*return((FILE *) fopen(&quot;C:/RTRT_PRJ/add/cdiabvxppc/atl.out&quot;,&quot;w+&quot;));*/
+
+/*fp = fopen(&quot;C:/RTRT_PRJ/add/atl.out&quot;,&quot;w+&quot;);*/
+
+int i=0;
+	char *evt = (char *)malloc(17+strlen(fileName));
+	rtrtFileNumber++;
+	sprintf(evt, &quot;RTRTOPENF_%5d_%s&quot;, rtrtFileNumber, fileName);
+printf(&quot;ATL DUMP In Progress\n&quot;);
+	while ((wdbUserEvtPost(evt)!=OK) &amp;&amp; (i&lt;20))
+	{
+		i++;
+		printf(&quot;Can't raise event RTRTOPENF %d\n&quot;, i);
+		taskDelay(10*sysClkRateGet()/1000);	
+	}
+
+	free(evt);
+	return(rtrtFileNumber); 
+
+//return(fopen(fileName,&quot;w&quot;));</VALUE>
+<TAIL>}</TAIL>
+</VALUEFCTC>
+</ONGLET>
+<ONGLET Doc="IO" Label="usr_writeln" >
+<VALUEFCTC>
+<COMMENT/>
+<PROTO>void usr_writeln(RTRT_FILE_TYPE f,char *s)
+{</PROTO>
+<VALUE>	/* Code here the write function */
+	/* The f parameter contains the file */
+	/* The s parameter contains the string to be printed */
+
+/*	fputs(s,f); 
+	
+	fflush(f); */
+/*fprintf(f,&quot;%s&quot;,s);*/
+/*printf(&quot;%s\n&quot;,s);*/
+/*printf(&quot;...Dumping : %s\n&quot;,s);
+printf(&quot;...file..from...writeln.%s \n&quot;,fp);
+printf(&quot;...Dumping : %s\n&quot;,s);*/
+/*fprintf(f,&quot;%s&quot;,s);
+printf(&quot;%s&quot;,s);
+*/
+#define BUFFERSIZE 100
+
+	int i, j;
+	unsigned int offset=0;
+	char *tmp;
+	char *evt;
+
+printf(&quot;%s&quot;,s);
+/*logMsg(&quot;%s&quot;,s);*/
+
+	evt = (char *)malloc(17+BUFFERSIZE);
+	tmp=s;
+	while(offset&lt;strlen(s))
+	{
+		sprintf(evt, &quot;RTRTWRITE_%5d_&quot;, f);
+/*sprintf(s, &quot;%s&quot;, f);*/
+
+		for(j=0; (j&lt;BUFFERSIZE) &amp;&amp; (*tmp!=0); j++, tmp++)
+			evt[16+j] = *tmp;
+		evt[16+j]=0;
+		offset = offset + BUFFERSIZE;
+
+		i=0;
+		while ((wdbUserEvtPost(evt)!=OK) &amp;&amp; (i&lt;20))
+		{
+			i++;
+			printf(&quot;Can't raise event RTRTWRITE %d\n&quot;, i);
+			taskDelay(10*sysClkRateGet()/1000);	
+		}
+	}
+	free(evt); 
+</VALUE>
+<TAIL>}</TAIL>
+</VALUEFCTC>
+</ONGLET>
+<ONGLET Doc="IO" Label="usr_close" >
+<VALUEFCTC>
+<COMMENT/>
+<PROTO>void usr_close(RTRT_FILE_TYPE f)
+{</PROTO>
+<VALUE>	/* Code here the close function */
+int i=0;
+
+
+	char *evt = (char *)malloc(16);
+/*printf(&quot;...Closing file...\n&quot;);
+  fclose(f);
+*/
+
+	sprintf(evt, &quot;RTRTCLOSE_%5d&quot;,f);
+
+	while ((wdbUserEvtPost(evt)!=OK) &amp;&amp; (i&lt;20))
+	{
+		i++;
+		printf(&quot;Can't raise event RTRTCLOSE %d\n&quot;, i);
+		taskDelay(10*sysClkRateGet()/1000); 	
+	}
+
+	free(evt); </VALUE>
+<TAIL>}</TAIL>
+</VALUEFCTC>
+</ONGLET>
+</CHOICE>
+</GENERAL_IO>
+<ERROR_IO Doc="ERRORTITLE" Label="Error message output" >
+<COMMENT/>
+<CHOICE Name="RTRT_ERROR" Value="RTRT_USR" >
+<COMMENT/>
+<CHOICEDATA Sensitive="0" >RTRT_NONE</CHOICEDATA>
+<CHOICEDATA Sensitive="0" >RTRT_STD</CHOICEDATA>
+<CHOICEDATA Sensitive="1" >RTRT_USR</CHOICEDATA>
+<ONGLET Doc="ERROR" Label="usr_error" >
+<VALUEFCTC>
+<COMMENT/>
+<PROTO>void usr_error(const char *s)
+{</PROTO>
+<VALUE>	/* Code the error function here */
+
+/*usr_error: attempt to use Target Deployment Port resources after exit handler has been called (level 4)*/
+
+	printf(&quot;usr_error: %s\n&quot;,s);
+atl_initialized = 0;
+	printf(&quot;Execute again \n&quot;);</VALUE>
+<TAIL>}</TAIL>
+</VALUEFCTC>
+</ONGLET>
+</CHOICE>
+</ERROR_IO>
+</IO>
+<HEAP Doc="HEAPOVERVIEWTITLE" Label="Heap management configuration" >
+<COMMENT/>
+<GENERAL_HEAP Doc="HEAPTITLE" Label="malloc/free function availability" >
+<COMMENT/>
+<CHOICE Name="RTRT_HEAP" Value="RTRT_NONE" >
+<COMMENT/>
+<CHOICEDATA Sensitive="0" >RTRT_STD</CHOICEDATA>
+<CHOICEDATA Sensitive="1" >RTRT_USR</CHOICEDATA>
+<CHOICEDATA Sensitive="0" >RTRT_NONE</CHOICEDATA>
+<ONGLET Doc="HEAP" Label="Settings" >
+<ITEM>
+<TEXT_MACRO Doc="ATPHASHSIZE" Name="ATP_HASH_SIZE" Label="Hash Size" >
+<COMMENT/>
+<VALUE>6</VALUE>
+</TEXT_MACRO>
+</ITEM>
+<ITEM>
+<OPTIONAL_MACRO Doc="REDZONEHEADSIZE" Defined="0" Name="ATP_RED_ZONE_HEAD_SIZE" Value="0" Label="Red Zone Head Size" >
+<COMMENT/>
+</OPTIONAL_MACRO>
+</ITEM>
+<ITEM>
+<OPTIONAL_MACRO Doc="REDZONETAILSIZE" Defined="0" Name="ATP_RED_ZONE_TAIL_SIZE" Value="0" Label="Red Zone Tail Size" >
+<COMMENT/>
+</OPTIONAL_MACRO>
+</ITEM>
+<ITEM>
+<BINARY_MACRO Doc="ATPCLEAN" Name="ATP_CLEAN" Value="0" Label="ATP Clean" >
+<COMMENT/>
+</BINARY_MACRO>
+</ITEM>
+<ITEM>
+<BINARY_MACRO Doc="NOHOOKGUARD" Name="RTRT_NO_HOOK_GUARD" Value="0" Label="No Hook Guard" >
+<COMMENT/>
+</BINARY_MACRO>
+</ITEM>
+</ONGLET>
+<ONGLET Doc="HEAP" Label="usr_malloc" >
+<VALUEFCTC>
+<COMMENT/>
+<PROTO>void *usr_malloc(RTRT_SIZE_T size)
+{</PROTO>
+<VALUE>	/* Code here your own allocation function here */</VALUE>
+<TAIL>}</TAIL>
+</VALUEFCTC>
+</ONGLET>
+<ONGLET Doc="HEAP" Label="usr_free" >
+<VALUEFCTC>
+<COMMENT/>
+<PROTO>void usr_free(void *ptr)
+{</PROTO>
+<VALUE>	/* Code here your own free function here */</VALUE>
+<TAIL>}</TAIL>
+</VALUEFCTC>
+</ONGLET>
+</CHOICE>
+</GENERAL_HEAP>
+<LOWLEVEL_MEMLIB Doc="LOWLEVELMEMLIBTITLE" Label="Standard memory functions override" >
+<COMMENT/>
+<CHOICE Name="RTRT_LOWLEVEL_MEMLIB" Value="RTRT_NONE" >
+<COMMENT/>
+<CHOICEDATA Sensitive="1" >RTRT_USR</CHOICEDATA>
+<CHOICEDATA Sensitive="0" >RTRT_NONE</CHOICEDATA>
+<ONGLET Doc="LOWLEVELMEMLIB" Label="lowlevel_malloc" >
+<VALUEFCTC>
+<COMMENT/>
+<PROTO>void *lowlevel_malloc(RTRT_SIZE_T size)
+{</PROTO>
+<VALUE>	/* Code the low level allocation function here */
+	return(__libc_malloc(size));</VALUE>
+<TAIL>}</TAIL>
+</VALUEFCTC>
+</ONGLET>
+<ONGLET Doc="LOWLEVELMEMLIB" Label="lowlevel_calloc" >
+<VALUEFCTC>
+<COMMENT/>
+<PROTO>void *lowlevel_calloc(RTRT_SIZE_T x,RTRT_SIZE_T y)
+{</PROTO>
+<VALUE>	/* Code the low level allocation function here */
+	return(__libc_calloc(x,y));</VALUE>
+<TAIL>}</TAIL>
+</VALUEFCTC>
+</ONGLET>
+<ONGLET Doc="LOWLEVELMEMLIB" Label="lowlevel_realloc" >
+<VALUEFCTC>
+<COMMENT/>
+<PROTO>void *lowlevel_realloc(void *ptr,RTRT_SIZE_T s)
+{</PROTO>
+<VALUE>	/* Code the low level allocation function here */
+	return(__libc_realloc(ptr,s));</VALUE>
+<TAIL>}</TAIL>
+</VALUEFCTC>
+</ONGLET>
+<ONGLET Doc="LOWLEVELMEMLIB" Label="lowlevel_free" >
+<VALUEFCTC>
+<COMMENT/>
+<PROTO>void lowlevel_free(void *ptr)
+{</PROTO>
+<VALUE>	/* Code the low level allocation function here */
+	__libc_free(ptr);</VALUE>
+<TAIL>}</TAIL>
+</VALUEFCTC>
+</ONGLET>
+</CHOICE>
+</LOWLEVEL_MEMLIB>
+<MEMLIB_EXTENSION Doc="MEMLIBEXTENSIONTITLE" Label="Tracking user-defined or OS-dependent memory functions" >
+<COMMENT/>
+<CHOICE Name="RTRT_MEMLIB_EXTENSION" Value="RTRT_USR" >
+<COMMENT/>
+<CHOICEDATA Sensitive="0" >RTRT_NONE</CHOICEDATA>
+<CHOICEDATA Sensitive="1" >RTRT_USR</CHOICEDATA>
+<ONGLET Doc="MEMLIBEXTENSION" Label="Memory Function Extensions" >
+<VALUEFCTC>
+<COMMENT/>
+<PROTO>#include &quot;atpapi.h&quot;</PROTO>
+<VALUE>void *RTRT_memPartAlloc(PART_ID id,unsigned n)
+{
+	void *r, *ptr;
+	unsigned x;
+
+	if (mySemID==NULL)
+		mySemID=semMCreate(SEM_Q_FIFO|SEM_Q_PRIORITY);
+	semTake(mySemID,WAIT_FOREVER);
+	x=_PurifyLTHeapActualSize(n);
+	r=memPartAlloc(id,x);
+	ptr = _PurifyLTHeapAction(_PurifyLT_API_ALLOC,r,n,0);
+	semGive(mySemID);
+	return(ptr);
+}
+
+void *RTRT_memPartRealloc(PART_ID id, char *pBlock, unsigned n)
+{
+	void *r, *ptr;
+	unsigned x;
+
+	if (mySemID==NULL)
+		mySemID=semMCreate(SEM_Q_FIFO|SEM_Q_PRIORITY);
+	semTake(mySemID,WAIT_FOREVER);
+	x = _PurifyLTHeapActualSize(n);
+	ptr = _PurifyLTHeapAction(_PurifyLT_API_BEFORE_REALLOC,pBlock,n,0);
+	r=memPartRealloc(id,(char *)ptr,x);
+	ptr = _PurifyLTHeapAction(_PurifyLT_API_ALLOC,r,n,0);
+	semGive(mySemID);
+	return(ptr);
+}
+
+STATUS RTRT_memPartFree(PART_ID id,char *ptr)
+{
+	return(memPartFree(id,(char *)_PurifyLTHeapAction(_PurifyLT_API_FREE,ptr,0,0)));
+}
+</VALUE>
+<TAIL/>
+</VALUEFCTC>
+</ONGLET>
+<ONGLET Doc="MEMLIBEXTENSION" Label="Macro Redefinition" >
+<VALUEFCTH>
+<COMMENT/>
+<PROTO/>
+<VALUE>#define memPartAlloc RTRT_memPartAlloc
+#define memPartRealloc RTRT_memPartRealloc
+#define memPartFree RTRT_memPartFree</VALUE>
+<TAIL/>
+</VALUEFCTH>
+</ONGLET>
+</CHOICE>
+</MEMLIB_EXTENSION>
+</HEAP>
+<CLOCK Doc="TIMEOVERVIEWTITLE" Label="Clock Interface" >
+<COMMENT>User clock Interface, nased on timespec. The VxSim simulator givs only a precision of 16 milliseconds, although all is prepared to have
+a precision based on the microsecond.</COMMENT>
+<CHOICE Name="RTRT_CLOCK" Value="RTRT_USR" >
+<COMMENT/>
+<CHOICEDATA Sensitive="0" >RTRT_NONE</CHOICEDATA>
+<CHOICEDATA Sensitive="0" >RTRT_STD</CHOICEDATA>
+<CHOICEDATA Sensitive="1" >RTRT_USR</CHOICEDATA>
+<ONGLET Doc="CLOCK" Label="Clock Type" >
+<ITEM>
+<TEXT_MACRO Doc="CLOCK" Name="RTRT_CLOCK_TYPE" Label="Clock type" >
+<COMMENT/>
+<VALUE>struct timespec</VALUE>
+</TEXT_MACRO>
+</ITEM>
+</ONGLET>
+<ONGLET Doc="CLOCK" Label="usr_clock" >
+<VALUEFCTC>
+<COMMENT>This function reads the clock and returns seconds-nanoseconds</COMMENT>
+<PROTO>void usr_clock(RTRT_CLOCK_TYPE *p)
+{</PROTO>
+<VALUE>	/* Code here the funtion which reads the clock */
+	/* and sets (*p) to the current clock value */
+	clock_gettime(CLOCK_REALTIME,(struct timespec *)p);</VALUE>
+<TAIL>}</TAIL>
+</VALUEFCTC>
+</ONGLET>
+<ONGLET Doc="CLOCK" Label="usr_clock_init" >
+<VALUEFCTC>
+<COMMENT/>
+<PROTO>void usr_clock_init(void)
+{</PROTO>
+<VALUE>	/* This function will be called only once when starting the program */
+atl_initialized = 0;
+	/* You may code here clock resolution computation */</VALUE>
+<TAIL>}</TAIL>
+</VALUEFCTC>
+</ONGLET>
+<ONGLET Doc="UNITTYPE" Label="Unit Type" >
+<ITEM>
+<TEXT_MACRO Doc="ATUDELAY" Name="RTRT_ATU_DELAY" Label="ATU Delay" >
+<COMMENT/>
+<VALUE>0</VALUE>
+</TEXT_MACRO>
+</ITEM>
+<ITEM>
+<TEXT_MACRO Doc="UNITTYPE" Name="RTRT_UNIT_TYPE" Label="Unit type" >
+<COMMENT/>
+<VALUE>RTRT_U_INT32</VALUE>
+</TEXT_MACRO>
+</ITEM>
+<ITEM>
+<TEXT_MACRO Doc="UNITTYPESIZE" Name="RTRT_UNIT_TYPE_SIZE" Label="Unit type size" >
+<COMMENT/>
+<VALUE>4</VALUE>
+</TEXT_MACRO>
+</ITEM>
+<ITEM>
+<TEXT_MACRO Doc="UNITTYPENAME" Name="RTRT_UNIT_TYPE_NAME" Label="Unit type name" >
+<COMMENT/>
+<VALUE>&quot;us&quot;</VALUE>
+</TEXT_MACRO>
+</ITEM>
+<ITEM>
+<TEXT_MACRO Doc="UNITTYPEFORMAT" Name="RTRT_UNIT_TYPE_FORMAT" Label="Unit type format" >
+<COMMENT/>
+<VALUE>&quot;1&quot;</VALUE>
+</TEXT_MACRO>
+</ITEM>
+<ITEM>
+<TEXT_MACRO Doc="CLOCKTOUNITS" Name="RTRT_CLOCK_TO_UNITS(c)" Label="Conversion from Clock to Unit" >
+<COMMENT>Convert seconds-nanoseconds into an 32-bits integer in MicroSeconds</COMMENT>
+<VALUE>((c.tv_sec*1000000)+(c.tv_nsec/1000))</VALUE>
+</TEXT_MACRO>
+</ITEM>
+</ONGLET>
+<ONGLET Doc="CLOCKDIFF" Label="Time Type - System Testing" >
+<ITEM>
+<TEXT_MACRO Doc="CLOCKDIFF" Name="RTRT_CLOCK_DIFF(r,a,b)" Label="Clock-values Difference" >
+<COMMENT/>
+<VALUE>usr_clock_diff(&amp;(r),&amp;(a),&amp;(b))</VALUE>
+</TEXT_MACRO>
+</ITEM>
+<ITEM>
+<TEXT_MACRO Doc="TIMETYPE" Name="RTRT_TIME_TYPE" Label="Time type" >
+<COMMENT/>
+<VALUE>RTRT_U_INT32</VALUE>
+</TEXT_MACRO>
+</ITEM>
+<ITEM>
+<TEXT_MACRO Doc="TIMETYPEFORMAT" Name="RTRT_TIME_TYPE_FORMAT" Label="Time type format" >
+<COMMENT/>
+<VALUE>&quot;0&quot;</VALUE>
+</TEXT_MACRO>
+</ITEM>
+<ITEM>
+<TEXT_MACRO Doc="CLOCKTOTIME" Name="RTRT_CLOCK_TO_TIME(c)" Label="Conversion from Clock to Time" >
+<COMMENT/>
+<VALUE>((c.tv_sec*1000)+(c.tv_nsec/1000000))</VALUE>
+</TEXT_MACRO>
+</ITEM>
+<ITEM>
+<TEXT_MACRO Doc="TIMETYPESTEP" Name="RTRT_TIME_TYPE_STEP" Label="Duration of 1 Time type in microseconds" >
+<COMMENT/>
+<VALUE>1000</VALUE>
+</TEXT_MACRO>
+</ITEM>
+</ONGLET>
+<ONGLET Doc="SLEEP" Label="usr_sleep - System Testing" >
+<VALUEFCTC>
+<COMMENT/>
+<PROTO>void usr_sleep(RTRT_TIME_TYPE p)
+{</PROTO>
+<VALUE>	/* Code here the funtion which sleeps for a while */
+	/* p contains the duration, represented in a RTRT_TIME_TYPE item */
+	/* Milliseconds in this particular vxWorks case */
+	int nbTicks;
+	int nbTicksPerSec=sysClkRateGet();
+	int tickDurationInMillisec;
+
+	tickDurationInMillisec=1000/nbTicksPerSec;
+	nbTicks=(p/tickDurationInMillisec);
+	taskDelay(nbTicks);</VALUE>
+<TAIL>}</TAIL>
+</VALUEFCTC>
+</ONGLET>
+</CHOICE>
+</CLOCK>
+<THREADS Doc="THREADSTITLE" Label="Thread Interface" >
+<COMMENT/>
+<CHOICE Name="RTRT_THREADS" Value="RTRT_USR" >
+<COMMENT/>
+<CHOICEDATA Sensitive="0" >RTRT_STD</CHOICEDATA>
+<CHOICEDATA Sensitive="0" >RTRT_SOLARIS</CHOICEDATA>
+<CHOICEDATA Sensitive="1" >RTRT_USR</CHOICEDATA>
+<CHOICEDATA Sensitive="0" >RTRT_NONE</CHOICEDATA>
+<ONGLET Doc="THREADS" Label="General" >
+<ITEM>
+<TEXT_MACRO Doc="THREADISALIVE" Name="RTRT_MT_THREAD_ISALIVE(id)" Label="Thread Is Alive" >
+<COMMENT/>
+<VALUE>(id)</VALUE>
+</TEXT_MACRO>
+</ITEM>
+<ITEM>
+<BINARY_MACRO Doc="THREADSINSPECTIONFORBIDDEN" Name="RTRT_OTHER_THREADS_INSPECTION_FORBIDDEN" Value="0" Label="Other Threads Inspection Forbidden" >
+<COMMENT/>
+</BINARY_MACRO>
+</ITEM>
+<ITEM>
+<TEXT_MACRO Doc="THREADSELFT" Name="RTRT_MT_THREAD_SELF_T" Label="Thread type" >
+<COMMENT/>
+<VALUE>int</VALUE>
+</TEXT_MACRO>
+</ITEM>
+<ITEM>
+<TEXT_MACRO Doc="THREADSELF" Name="RTRT_MT_THREAD_SELF" Label="Obtain Thread-Self Id" >
+<COMMENT/>
+<VALUE>taskIdSelf()</VALUE>
+</TEXT_MACRO>
+</ITEM>
+<ITEM>
+<TEXT_MACRO Doc="THREADEQUAL" Name="RTRT_MT_THREAD_EQUAL(t1,t2)" Label="Thread equals" >
+<COMMENT/>
+<VALUE>((t1)==(t2))</VALUE>
+</TEXT_MACRO>
+</ITEM>
+<ITEM>
+<TEXT_MACRO Doc="THREADEXIT" Name="RTRT_MT_THREAD_EXIT(v)" Label="Thread Exit" >
+<COMMENT/>
+<VALUE>taskDelete(taskIdSelf());</VALUE>
+</TEXT_MACRO>
+</ITEM>
+</ONGLET>
+<ONGLET Doc="CRITICALVARDECL" Label="Mutual Exclusion" >
+<ITEM>
+<TEXT_MACRO Doc="CRITICALVARDECL" Name="RTRT_MT_CRITICAL_VAR_DECL(v)" Label="Mutex Declaration" >
+<COMMENT/>
+<VALUE>SEM_ID v;</VALUE>
+</TEXT_MACRO>
+</ITEM>
+<ITEM>
+<TEXT_MACRO Doc="CRITICALVARINIT" Name="RTRT_MT_CRITICAL_VAR_INIT(v)" Label="Mutex Initialization" >
+<COMMENT/>
+<VALUE>v=semMCreate(SEM_Q_FIFO|SEM_Q_PRIORITY);</VALUE>
+</TEXT_MACRO>
+</ITEM>
+<ITEM>
+<TEXT_MACRO Doc="CRITICALVARLOCK" Name="RTRT_MT_CRITICAL_VAR_LOCK(v)" Label="Mutex Lock" >
+<COMMENT/>
+<VALUE>semTake(v,WAIT_FOREVER);</VALUE>
+</TEXT_MACRO>
+</ITEM>
+<ITEM>
+<TEXT_MACRO Doc="CRITICALVARUNLOCK" Name="RTRT_MT_CRITICAL_VAR_UNLOCK(v)" Label="Mutex Unlock" >
+<COMMENT/>
+<VALUE>semGive(v);</VALUE>
+</TEXT_MACRO>
+</ITEM>
+<ITEM>
+<TEXT_MACRO Doc="CRITICALVARDESTROY" Name="RTRT_MT_CRITICAL_VAR_DESTROY(v)" Label="Mutex Delete" >
+<COMMENT/>
+<VALUE>semDelete(v);</VALUE>
+</TEXT_MACRO>
+</ITEM>
+<ITEM>
+<BINARY_MACRO Doc="CRITICALVARRECURSIVE" Name="RTRT_MT_CRITICAL_VAR_RECURSIVE" Value="1" Label="Recursive Mutex" >
+<COMMENT/>
+</BINARY_MACRO>
+</ITEM>
+</ONGLET>
+<ONGLET Doc="SPECIFICDATADECLARE" Label="Thread-Specific Data" >
+<ITEM>
+<TEXT_MACRO Doc="SPECIFICDATADECLARE" Name="RTRT_MT_THREAD_SPECIFIC_DATA_DECLARE" Label="Thread-Specific Data Declaration" >
+<COMMENT/>
+<VALUE/>
+</TEXT_MACRO>
+</ITEM>
+<ITEM>
+<TEXT_MACRO Doc="SPECIFICDATACREATE" Name="RTRT_MT_THREAD_SPECIFIC_DATA_CREATE" Label="Thread-Specific Data create" >
+<COMMENT/>
+<VALUE/>
+</TEXT_MACRO>
+</ITEM>
+<ITEM>
+<TEXT_MACRO Doc="SPECIFICDATADELETE" Name="RTRT_MT_THREAD_SPECIFIC_DATA_DELETE" Label="Thread-Specific Data delete" >
+<COMMENT/>
+<VALUE/>
+</TEXT_MACRO>
+</ITEM>
+<ITEM>
+<TEXT_MACRO Doc="SPECIFICDATAGET" Name="RTRT_MT_THREAD_SPECIFIC_DATA_GET(v)" Label="Thread-Specific Data get" >
+<COMMENT/>
+<VALUE>{WIND_TCB *p=taskTcb(taskIdSelf()); v=p->spare4;}</VALUE>
+</TEXT_MACRO>
+</ITEM>
+<ITEM>
+<TEXT_MACRO Doc="SPECIFICDATASET" Name="RTRT_MT_THREAD_SPECIFIC_DATA_SET(v)" Label="Thread-Specific Data set" >
+<COMMENT/>
+<VALUE>{WIND_TCB *p=taskTcb(taskIdSelf()); p->spare4=v;}</VALUE>
+</TEXT_MACRO>
+</ITEM>
+</ONGLET>
+</CHOICE>
+</THREADS>
+<FREE_TEXT_AFTER_FOR_TDP Doc="FREETEXTAFTERTDP" Label="User-defined extra code" >
+<COMMENT/>
+<VALUE/>
+</FREE_TEXT_AFTER_FOR_TDP>
+</LIBCONFC>
+</LIBCONF>
+<PARSERCONF Doc="PARSERCONFC" Label="Parser Settings" >
+<COMMENT/>
+<PARSERCONFC>
+<PC_TRT>
+<PCATUSCDEF Doc="PCATUSCDEF" Label="Component Testing and System Testing for C" >
+<COMMENT/>
+<VALUE>
+#define __inline__ inline
+#define __inline inline
+#define __const const
+#define __signed signed
+#define __signed__ signed
+#define __attribute__(x)
+#define __volatile__
+#define __volatile
+#define volatile
+#define __restrict restrict
+#define __extension__
+
+char *__FUNCTION__;
+char *__PRETTY_FUNCTION__;
+
+#define __asm asm
+#define __asm__ asm
+
+
+typedef void *	__builtin_va_list;
+#define 		__builtin_stdarg_start(ap,param)
+#define 		__builtin_next_arg(p) 0
+#define 		__builtin_va_arg(ap,type) 0
+#define 		__builtin_va_end(ap)
+
+extern void *		__builtin_alloca(unsigned int);
+extern int 		__builtin_ffs(int);
+extern int 		__builtin_abs(int);
+extern float 		__builtin_fabsf(float);
+extern double 		__builtin_fabs(double);
+extern long double 	__builtin_fabsl(long double);
+extern long int 		__builtin_labs(long int);
+extern void *		__builtin_memcpy(void *, const void *, unsigned int);
+extern int	 	__builtin_memcmp(const void *, const void *, unsigned int);
+extern int 		__builtin_strcmp(const char *, const char *);
+extern char *		__builtin_strcpy(char *, const char *);
+extern double 		__builtin_sqrt(double);
+extern float 		__builtin_sqrtf(float);
+extern long double 	__builtin_sqrtl(long double);
+extern double 		__builtin_sin(double);
+extern float 		__builtin_sinf(float);
+extern long double 	__builtin_sinl(long double);
+extern double 		__builtin_cos(double);
+extern float 		__builtin_cosf(float);
+extern long double 	__builtin_cosl(long double);
+extern char *		__builtin_strchr(const char *, int);
+extern char *		__builtin_strrchr(const char *, int);
+extern char *		__builtin_strpbrk(const char *, const char*);
+extern char *		__builtin_strstr(const char *, const char *);
+
+#define 		__builtin_return(result) return(result)
+#define		__builtin_constant_p(X) 0
+extern void *	__builtin_apply_args (void);
+extern void *	__builtin_apply (void (*)(), void *, int); 
+extern int 	__builtin_return_address (int);
+extern int 	__builtin_frame_address (int);
+
+#define 		__builtin_isgreater(x, y) 0
+#define 		__builtin_isgreaterequal(x, y) 0
+#define 		__builtin_isless(x, y) 0
+#define 		__builtin_islessequal(x, y) 0
+#define 		__builtin_islessgreater(x, y) 0
+#define 		__builtin_isunordered(x, y) 0
+#define 		__builtin_classify_type(x, y) 0
+#define 		__builtin_expect(x, y) 0
+
+
+/* Macros start - do not remove this line */
+
+/* Macro end - do not remove this line */
+</VALUE>
+</PCATUSCDEF>
+</PC_TRT>
+<PC_TRT>
+<PCATUSCPPDEF Doc="PCATUSCDEF" Label="System Testing for C++" >
+<COMMENT/>
+<VALUE>
+#define __cplusplus 1
+#define __inline__ inline
+#define __inline inline
+#define __const const
+#define __signed signed
+#define __signed__ signed
+#define __attribute__(x)
+#define __volatile__
+#define __volatile
+#define volatile
+#define __restrict
+#define __inline__ inline
+#define wchar_t int
+
+#define __tune_i386__i
+#define __tune_i486__
+#define __const const
+#define __restrict
+#define __extension__
+#define __EXCEPTIONS
+
+#define __register_exceptions
+#define __throw
+#define __find_first_exception_table_match
+#define __unwind_function
+
+char *__FUNCTION__;
+char *__PRETTY_FUNCTION__;
+
+#define __asm asm
+#define __asm__ asm
+
+
+typedef void *	__builtin_va_list;
+#define 		__builtin_stdarg_start(ap,param)
+#define 		__builtin_next_arg(p) 0
+#define 		__builtin_va_arg(ap,type) 0
+#define 		__builtin_va_end(ap)
+
+extern void *		__builtin_alloca(unsigned int);
+extern int 		__builtin_ffs(int);
+extern int 		__builtin_abs(int);
+extern float 		__builtin_fabsf(float);
+extern double 		__builtin_fabs(double);
+extern long double 	__builtin_fabsl(long double);
+extern long int 		__builtin_labs(long int);
+extern void *		__builtin_memcpy(void *, const void *, unsigned int);
+extern int	 	__builtin_memcmp(const void *, const void *, unsigned int);
+extern int 		__builtin_strcmp(const char *, const char *);
+extern char *		__builtin_strcpy(char *, const char *);
+extern unsigned int 	__builtin_strlen(const char *);
+extern double 		__builtin_sqrt(double);
+extern float 		__builtin_sqrtf(float);
+extern long double 	__builtin_sqrtl(long double);
+extern double 		__builtin_sin(double);
+extern float 		__builtin_sinf(float);
+extern long double 	__builtin_sinl(long double);
+extern double 		__builtin_cos(double);
+extern float 		__builtin_cosf(float);
+extern long double 	__builtin_cosl(long double);
+extern char *		__builtin_strchr(const char *, int);
+extern char *		__builtin_strrchr(const char *, int);
+extern char *		__builtin_strpbrk(const char *, const char*);
+extern char *		__builtin_strstr(const char *, const char *);
+
+#define 		__builtin_return(result) return(result)
+#define		__builtin_constant_p(X) 0
+extern void *	__builtin_apply_args (void);
+extern void *	__builtin_apply (void (*)(), void *, int); 
+extern int 	__builtin_return_address (int);
+extern int 	__builtin_frame_address (int);
+
+#define 		__builtin_isgreater(x, y) 0
+#define 		__builtin_isgreaterequal(x, y) 0
+#define 		__builtin_isless(x, y) 0
+#define 		__builtin_islessequal(x, y) 0
+#define 		__builtin_islessgreater(x, y) 0
+#define 		__builtin_isunordered(x, y) 0
+#define 		__builtin_classify_type(x, y) 0
+#define 		__builtin_expect(x, y) 0
+
+/* Macros start - do not remove this line */
+
+/* Macro end - do not remove this line */
+#define __STDC__ 1
+</VALUE>
+</PCATUSCPPDEF>
+</PC_TRT>
+<PC_TRT>
+<PCATCTDEF Doc="PCATCTDEF" Label="Runtime analysis features for C" >
+<COMMENT/>
+<VALUE>/* Macros start - do not remove this line */
+
+/* Macro end - do not remove this line */
+#pragma attol nointerpret
+#pragma attol accept &quot;__volatile__&quot;
+#pragma attol accept &quot;__volatile&quot;
+#pragma attol accept &quot;__signed__&quot; = 279
+#pragma attol accept &quot;__const__&quot; = 273
+#pragma attol accept &quot;__const&quot; = 273
+#pragma attol accept &quot;__inline__&quot;
+#pragma attol accept &quot;__inline&quot;
+#pragma attol accept &quot;inline&quot;
+#pragma attol accept &quot;asm&quot; up to 339
+
+#pragma attol type_modifier = __restrict
+
+#pragma attol &quot;gnu#__extension__&quot;
+
+#pragma attol reduce &quot;__attribute__&quot; null
+#pragma attol reduce &quot;__attribute&quot; null
+
+#pragma attol reduce &quot;__asm__&quot; empty
+#pragma attol reduce &quot;__asm&quot; empty
+#pragma attol reduce &quot;asm&quot; empty
+
+#pragma attol reduce &quot;__typeof__&quot; typename
+#pragma attol reduce &quot;__alignof__&quot;
+
+#pragma attol accept &quot;__FUNCTION__&quot; = 290
+#pragma attol accept &quot;__PRETTY_FUNCTION__&quot; = 290
+
+typedef void *	__builtin_va_list;
+#define 		__builtin_stdarg_start(ap,param)
+#define 		__builtin_next_arg(p) 0
+#define 		__builtin_va_arg(ap,type) 0
+#define 		__builtin_va_end(ap)
+
+extern void *		__builtin_alloca(unsigned int);
+extern int 		__builtin_ffs(int);
+extern int 		__builtin_abs(int);
+extern float 		__builtin_fabsf(float);
+extern double 		__builtin_fabs(double);
+extern long double 	__builtin_fabsl(long double);
+extern long int 		__builtin_labs(long int);
+extern void *		__builtin_memcpy(void *, const void *, unsigned int);
+extern int	 	__builtin_memcmp(const void *, const void *, unsigned int);
+extern int 		__builtin_strcmp(const char *, const char *);
+extern char *		__builtin_strcpy(char *, const char *);
+extern unsigned int 	__builtin_strlen(const char *);
+extern double 		__builtin_sqrt(double);
+extern float 		__builtin_sqrtf(float);
+extern long double 	__builtin_sqrtl(long double);
+extern double 		__builtin_sin(double);
+extern float 		__builtin_sinf(float);
+extern long double 	__builtin_sinl(long double);
+extern double 		__builtin_cos(double);
+extern float 		__builtin_cosf(float);
+extern long double 	__builtin_cosl(long double);
+extern char *		__builtin_strchr(const char *, int);
+extern char *		__builtin_strrchr(const char *, int);
+extern char *		__builtin_strpbrk(const char *, const char*);
+extern char *		__builtin_strstr(const char *, const char *);
+
+#define 		__builtin_return(result) return(result)
+#define		__builtin_constant_p(X) 0
+extern void *	__builtin_apply_args (void);
+extern void *	__builtin_apply (void (*)(), void *, int); 
+extern int 	__builtin_return_address (int);
+extern int 	__builtin_frame_address (int);
+
+#define 		__builtin_isgreater(x, y) 0
+#define 		__builtin_isgreaterequal(x, y) 0
+#define 		__builtin_isless(x, y) 0
+#define 		__builtin_islessequal(x, y) 0
+#define 		__builtin_islessgreater(x, y) 0
+#define 		__builtin_isunordered(x, y) 0
+#define 		__builtin_classify_type(x, y) 0
+#define 		__builtin_expect(x, y) 0
+
+
+</VALUE>
+</PCATCTDEF>
+</PC_TRT>
+<PC_EDG Doc="PCEDG" Label="Component Testing for C++ and Runtime analysis features for C++" >
+<COMMENT/>
+<PCHPP Doc="PCHPP" Label="Header file configuration" >
+<COMMENT/>
+<VALUE>
+/* Macros definitions: do not remove this line */
+#ifdef NEED_PREPRO_DEFS
+
+#endif /* NEED_PREPRO_DEFS */
+
+#define __inline__ inline
+#define __inline inline
+#define __const const
+#define __signed signed
+#define __signed__ signed
+#define __attribute__(x)
+#define __attribute(x)
+#define __volatile__
+#define __volatile
+#define volatile
+#define __restrict
+
+#define __FUNCTION__ &quot;__FUNCTION__&quot;
+#define __PRETTY_FUNCTION__ &quot;__PRETTY_FUNCTION__&quot;
+
+#define __asm asm
+#define __asm__ asm
+
+
+#ifdef NEED_PREPRO_DEFS
+#define __null 0
+#else
+#define __null __atl_null 6
+#endif
+
+
+typedef void *	__builtin_va_list;
+#define 		__builtin_stdarg_start(ap,param)
+#define 		__builtin_next_arg(p) 0
+#define 		__builtin_va_arg(ap,type) 0
+#define 		__builtin_va_end(ap)
+
+extern void *		__builtin_saveregs(void);
+extern int 		__builtin_args_info (int);
+extern void *		__builtin_alloca(unsigned int);
+extern int 		__builtin_ffs(int);
+extern int 		__builtin_abs(int);
+extern float 		__builtin_fabsf(float);
+extern double 		__builtin_fabs(double);
+extern long double 	__builtin_fabsl(long double);
+extern long int 		__builtin_labs(long int);
+extern void *		__builtin_memcpy(void *, const void *, unsigned int);
+extern int	 	__builtin_memcmp(const void *, const void *, unsigned int);
+extern int 		__builtin_strcmp(const char *, const char *);
+extern char *		__builtin_strcpy(char *, const char *);
+extern unsigned int 	__builtin_strlen(const char *);
+extern double 		__builtin_sqrt(double);
+extern float 		__builtin_sqrtf(float);
+extern long double 	__builtin_sqrtl(long double);
+extern double 		__builtin_sin(double);
+extern float 		__builtin_sinf(float);
+extern long double 	__builtin_sinl(long double);
+extern double 		__builtin_cos(double);
+extern float 		__builtin_cosf(float);
+extern long double 	__builtin_cosl(long double);
+extern char *		__builtin_strchr(const char *, int);
+extern char *		__builtin_strrchr(const char *, int);
+extern char *		__builtin_strpbrk(const char *, const char*);
+extern char *		__builtin_strstr(const char *, const char *);
+
+#define 		__builtin_return(result) return(result)
+#define		__builtin_constant_p(X) 0
+extern void *	__builtin_apply_args (void);
+extern void *	__builtin_apply (void (*)(), void *, int); 
+extern int 	__builtin_return_address (int);
+extern int 	__builtin_frame_address (int);
+
+#define 		__builtin_isgreater(x, y) 0
+#define 		__builtin_isgreaterequal(x, y) 0
+#define 		__builtin_isless(x, y) 0
+#define 		__builtin_islessequal(x, y) 0
+#define 		__builtin_islessgreater(x, y) 0
+#define 		__builtin_isunordered(x, y) 0
+#define 		__builtin_classify_type(x, y) 0
+#define 		__builtin_expect(x, y) 0
+
+#define 		__builtin_expect(x, y) 0
+
+#define RTRT_LINE_SPLIT_MARKER_BEGIN &quot;^&quot;
+#define RTRT_LINE_SPLIT_MARKER_END &quot;^&quot;</VALUE>
+</PCHPP>
+<PCOPP Doc="PCOPP" Label="Analyzer file configuration" >
+<COMMENT/>
+<VALUE>--old_for_init
+--dollar
+--no_restrict
+--ignore_std
+--special_subscript_cost
+--no_alternative_tokens
+--extended_variadic_macros
+--void_star_null_pointer
+--guiding_decls
+--old_specialization
+--inline_not_yet_defined
+--gnu_mode
+--microsoft_union_with_array
+--treat_template_classes_as_static
+--simulate_virtual_methods
+--simulate_called_routines
+--diag_suppress 14,34,46,111,161,174,177,305,375,427,549,550,737,795,830,837,940,997
+--diag_suppress 1,30,114,289,330,349,397
+--diag_suppress 137,280,350,381,416,541,815
+--diag_suppress 756,347,186,307,175,485,321
+--diag_suppress 265
+--old_style_template_instantiation
+--vla
+--targ_size_t_int_kind 6</VALUE>
+</PCOPP>
+</PC_EDG>
+</PARSERCONFC>
+</PARSERCONF>
+</TDP>
